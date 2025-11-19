@@ -1,4 +1,4 @@
-use crate::trace::generator::{utils::opt_arg, QuintCommand, DEFAULT_TRACES};
+use crate::trace::generator::{utils::opt_arg, Config, DEFAULT_TRACES};
 use std::{path::Path, process::Command};
 
 pub struct TestConfig {
@@ -9,7 +9,7 @@ pub struct TestConfig {
     pub seed: String,
 }
 
-impl QuintCommand for TestConfig {
+impl Config for TestConfig {
     fn to_command(&self, tmpdir: &Path) -> Command {
         let n_traces = self.max_samples.unwrap_or(DEFAULT_TRACES).to_string();
         let mut cmd = Command::new("quint");

@@ -7,7 +7,7 @@ use std::{
 };
 use tempdir::TempDir;
 
-pub struct Traces {
+pub(crate) struct Traces {
     iter: ReadDir,
     _tmpdir: TempDir,
 }
