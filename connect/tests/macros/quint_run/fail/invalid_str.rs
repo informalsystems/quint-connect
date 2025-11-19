@@ -4,7 +4,7 @@ struct TestDriver;
 
 impl Driver for TestDriver {}
 
-#[quint_run]
+#[quint_run(spec = "spec.qnt", main = 666)]
 fn test1() -> impl Driver {
     TestDriver
 }

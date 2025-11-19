@@ -1,0 +1,5 @@
+error: expected string literal
+ --> tests/macros/quint_run/fail/invalid_str.rs:7:39
+  |
+7 | #[quint_run(spec = "spec.qnt", main = 666)]
+  |                                       ^^^
