@@ -1,4 +1,4 @@
-use crate::{trace::generator::Config as GenConfig, Driver};
+use crate::{Driver, trace::generator::Config as GenConfig};
 use anyhow::Result;
 
 pub use crate::trace::generator::{RunConfig, TestConfig};

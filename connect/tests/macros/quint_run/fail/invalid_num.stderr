@@ -1,11 +1,11 @@
 error: invalid digit found in string
- --> tests/macros/quint_run/fail/invalid_num.rs:7:46
-  |
-7 | #[quint_run(spec = "spec.qnt", max_samples = -666)]
-  |                                              ^
+  --> tests/macros/quint_run/fail/invalid_num.rs:11:46
+   |
+11 | #[quint_run(spec = "spec.qnt", max_samples = -666)]
+   |                                              ^
 
 error: expected integer literal
-  --> tests/macros/quint_run/fail/invalid_num.rs:12:46
+  --> tests/macros/quint_run/fail/invalid_num.rs:16:46
    |
-12 | #[quint_run(spec = "spec.qnt", max_samples = "666")]
+16 | #[quint_run(spec = "spec.qnt", max_samples = "666")]
    |                                              ^^^^^

@@ -1,6 +1,6 @@
 use proc_macro2::TokenStream;
-use quote::{quote, ToTokens};
-use syn::{meta::ParseNestedMeta, parse::Result, LitInt, LitStr};
+use quote::{ToTokens, quote};
+use syn::{LitInt, LitStr, meta::ParseNestedMeta, parse::Result};
 
 pub(crate) fn parse_str(meta: &ParseNestedMeta<'_>) -> Result<String> {
     Ok(meta.value()?.parse::<LitStr>()?.value())

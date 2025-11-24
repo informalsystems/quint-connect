@@ -8,5 +8,5 @@ pub mod itf {
     pub use itf::{Trace, Value};
 }
 
-pub use driver::Driver;
-pub use quint_connect_macros::quint_run;
+pub use driver::{Driver, NondetPick, NondetPicks, Status, Step};
+pub use quint_connect_macros::{quint_run, switch};

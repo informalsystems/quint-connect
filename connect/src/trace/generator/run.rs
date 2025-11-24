@@ -1,4 +1,4 @@
-use crate::trace::generator::{utils::opt_arg, Config, DEFAULT_TRACES};
+use crate::trace::generator::{Config, DEFAULT_TRACES, utils::opt_arg};
 use std::{path::Path, process::Command};
 
 pub struct RunConfig {

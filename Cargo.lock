@@ -352,6 +352,7 @@ dependencies = [
  "anyhow",
  "itf",
  "quint-connect-macros",
+ "serde",
  "serde_json",
  "tempdir",
  "trybuild",

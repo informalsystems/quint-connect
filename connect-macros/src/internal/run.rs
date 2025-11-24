@@ -1,7 +1,7 @@
 use crate::internal::utils::{parse_num, parse_str, quote_opt_lit, quote_opt_str, quote_seed};
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{meta::ParseNestedMeta, parse::Result, ItemFn};
+use syn::{ItemFn, meta::ParseNestedMeta, parse::Result, parse_macro_input};
 
 #[derive(Default, Debug)]
 struct RunAttrs {
@@ -40,7 +40,7 @@ impl RunAttrs {
 pub(crate) fn expand(args: TokenStream, item: TokenStream) -> TokenStream {
     let mut attrs = RunAttrs::default();
     let parser = syn::meta::parser(|meta| attrs.parse(meta));
-    syn::parse_macro_input!(args with parser);
+    parse_macro_input!(args with parser);
 
     if attrs.spec.as_ref().is_none_or(|spec| spec.is_empty()) {
         return quote! {
@@ -57,7 +57,7 @@ pub(crate) fn expand(args: TokenStream, item: TokenStream) -> TokenStream {
     let max_steps = quote_opt_lit(&attrs.max_steps);
     let seed = quote_seed(&attrs.seed);
 
-    let test_fn = syn::parse_macro_input!(item as ItemFn);
+    let test_fn = parse_macro_input!(item as ItemFn);
     let test_ident = test_fn.sig.ident;
     let test_name = test_ident.to_string();
     let test_block = test_fn.block;

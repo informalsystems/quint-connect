@@ -1,6 +1,6 @@
 #[test]
-fn test_quint_run() {
+fn test_macros() {
     let t = trybuild::TestCases::new();
-    t.pass("tests/macros/quint_run/pass/*.rs");
-    t.compile_fail("tests/macros/quint_run/fail/*.rs");
+    t.pass("tests/macros/*/pass/*.rs");
+    t.compile_fail("tests/macros/*/fail/*.rs");
 }

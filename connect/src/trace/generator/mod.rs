@@ -6,7 +6,7 @@ pub use run::RunConfig;
 pub use test::TestConfig;
 
 use crate::trace::iter::Traces;
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
 use std::{path::Path, process::Command};
 use tempdir::TempDir;
 

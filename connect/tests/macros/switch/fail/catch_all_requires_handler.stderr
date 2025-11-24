@@ -1,0 +1,5 @@
+error: unexpected end of input, _ case requires a handler block
+ --> tests/macros/switch/fail/catch_all_requires_handler.rs:7:26
+  |
+7 |         switch!(step { _ })
+  |                          ^
