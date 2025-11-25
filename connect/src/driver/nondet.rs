@@ -2,7 +2,7 @@ use crate::itf::{
     option::OptionValue,
     value::{Record, Value},
 };
-use anyhow::{Result, bail};
+use anyhow::{Context, Result, bail};
 use serde::de::DeserializeOwned;
 
 pub struct NondetPicks(Record);
@@ -35,7 +35,7 @@ impl<'a> NondetPick<'a> {
     where
         T: DeserializeOwned,
     {
-        Ok(T::deserialize(self.0.clone())?)
+        T::deserialize(self.0.clone()).context("Failed to deserialize nondet pick")
     }
 }
 
