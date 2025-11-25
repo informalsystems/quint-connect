@@ -1,8 +1,8 @@
-mod nondet;
 mod status;
 mod step;
 
-pub use nondet::{NondetPick, NondetPicks};
+pub mod nondet;
+
 pub use status::Status;
 pub use step::Step;
 

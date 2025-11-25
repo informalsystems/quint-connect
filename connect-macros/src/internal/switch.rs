@@ -1,12 +1,11 @@
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{
-    braced, parenthesized,
+    Expr, Ident, Token, Type, braced, parenthesized,
     parse::{Parse, ParseBuffer, ParseStream},
     parse_macro_input,
     punctuated::Punctuated,
     token::Paren,
-    Expr, Ident, Token, Type,
 };
 
 struct Switch {

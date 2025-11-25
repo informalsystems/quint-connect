@@ -1,8 +1,7 @@
-#[allow(unused)] // FIXME
-pub(crate) mod generator;
-#[allow(unused)] // FIXME
 mod iter;
 
-use crate::itf::Value;
+pub(crate) mod generator;
 
-pub type Trace = crate::itf::Trace<Value>;
+use crate::itf;
+
+pub(crate) type Trace = itf::Trace<itf::Value>;
