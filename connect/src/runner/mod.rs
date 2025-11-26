@@ -1,3 +1,7 @@
+mod seed;
+
+pub use seed::*;
+
 use crate::{
     Driver, Step,
     logger::*,
@@ -9,10 +13,6 @@ use crate::{
 use anyhow::Result;
 
 pub use crate::trace::generator::{RunConfig, TestConfig};
-
-pub fn random_seed() -> String {
-    "0x42".to_string() // FIXME
-}
 
 pub struct Config<C: GenConfig> {
     pub test_name: String,
@@ -28,10 +28,19 @@ pub fn run_test<C: GenConfig>(driver: impl Driver, config: Config<C>) -> Result<
     );
 
     let traces = generate_traces(&config.gen_config)?;
-    replay_traces(driver, traces)?;
+    let result = replay_traces(driver, traces);
 
-    success!("[OK] {}", config.test_name);
-    Ok(())
+    if result.is_ok() {
+        success!("[OK] {}", config.test_name);
+    } else {
+        error!("[FAIL] {} ", config.test_name);
+        error!(
+            "Reproduce the error with QUINT_SEED={}",
+            config.gen_config.seed()
+        );
+    }
+
+    result
 }
 
 fn replay_traces<D: Driver>(mut driver: D, traces: Traces) -> Result<()> {

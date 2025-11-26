@@ -28,7 +28,7 @@ pub(crate) fn quote_seed(opt: &Option<String>) -> TokenStream {
     match opt {
         Some(seed) => quote! { #seed.to_string() },
         None => quote! {
-            quint_connect::runner::random_seed()
+            quint_connect::runner::gen_random_seed()
         },
     }
 }
