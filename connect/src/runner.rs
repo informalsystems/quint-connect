@@ -11,7 +11,7 @@ use anyhow::Result;
 pub use crate::trace::generator::{RunConfig, TestConfig};
 
 pub fn random_seed() -> String {
-    "42".to_string() // FIXME
+    "0x42".to_string() // FIXME
 }
 
 pub struct Config<C: GenConfig> {
@@ -28,7 +28,11 @@ pub fn run_test<C: GenConfig>(driver: impl Driver, config: Config<C>) -> Result<
     );
 
     let traces = generate_traces(&config.gen_config)?;
-    replay_traces(driver, traces)
+    replay_traces(driver, traces)?;
+
+    // TODO: print failures in red + seed again
+    success!("[OK] {}", config.test_name);
+    Ok(())
 }
 
 fn replay_traces<D: Driver>(mut driver: D, traces: Traces) -> Result<()> {
