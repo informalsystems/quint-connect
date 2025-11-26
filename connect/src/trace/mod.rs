@@ -1,7 +1,4 @@
-mod iter;
-
 pub(crate) mod generator;
+pub(crate) mod iter;
 
-use crate::itf;
-
-pub(crate) type Trace = itf::Trace<itf::Value>;
+pub(crate) type Trace = crate::itf::Trace<crate::itf::Value>;

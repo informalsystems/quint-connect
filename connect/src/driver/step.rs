@@ -49,7 +49,12 @@ fn extract_action_taken(state: &mut Record) -> Result<String> {
 
 impl fmt::Display for Step {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "Action taken: {}", self.action_taken)?;
+        write!(f, "Action taken:")?;
+        if self.action_taken.is_empty() {
+            writeln!(f, " <stuttering>")?;
+        } else {
+            writeln!(f, " {}", self.action_taken)?;
+        }
 
         write!(f, "Nondet picks:")?;
         if self.nondet_picks.is_empty() {

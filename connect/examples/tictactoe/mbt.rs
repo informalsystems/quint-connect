@@ -33,6 +33,8 @@ struct TicTacToeDriver {
 }
 
 impl Driver for TicTacToeDriver {
+    type State = ();
+
     fn step(&mut self, step: &Step) -> Status {
         switch!(step {
             init => self.game = TicTacToe::default(),
@@ -52,7 +54,7 @@ fn to_game_pos(pos: Position) -> Position {
     (x - 1, y - 1)
 }
 
-#[quint_run(spec = "tests/fixtures/tictactoe.qnt", max_samples = 10)]
+#[quint_run(spec = "examples/tictactoe/tictactoe.qnt", max_samples = 10)]
 fn test_tictactoe() -> impl Driver {
     TicTacToeDriver::default()
 }

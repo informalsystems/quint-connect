@@ -66,15 +66,32 @@ fn write_map(f: &mut Formatter, map: &Map<Value, Value>) -> Result {
 }
 
 fn write_rec(f: &mut Formatter, rec: &Record) -> Result {
-    write!(f, "{{ ")?;
-    let mut iter = rec.iter();
-    if let Some((key, value)) = iter.next() {
-        write!(f, "{}: {}", key, value.display())?;
-        for (key, value) in iter {
-            write!(f, ", {}: {}", key, value.display())?;
+    if rec.len() == 2
+        && let Some(Value::String(tag)) = rec.get("tag")
+        && let Some(value) = rec.get("value")
+    {
+        // Special case for tagged values
+        write!(f, "{}", tag)?;
+        if let tuple @ Value::Tuple(values) = value {
+            if !values.is_empty() {
+                write!(f, "{}", tuple.display())?;
+            }
+        } else {
+            write!(f, "({})", value.display())?;
         }
+    } else {
+        // General data record
+        write!(f, "{{ ")?;
+        let mut iter = rec.iter();
+        if let Some((key, value)) = iter.next() {
+            write!(f, "{}: {}", key, value.display())?;
+            for (key, value) in iter {
+                write!(f, ", {}: {}", key, value.display())?;
+            }
+        }
+        write!(f, " }}")?;
     }
-    write!(f, " }}")
+    Ok(())
 }
 
 #[cfg(test)]
@@ -128,6 +145,22 @@ mod tests {
         values.insert("num".to_string(), Value::Number(42));
         values.insert("bool".to_string(), Value::Bool(false));
         assert_display(Value::Record(values), "{ bool: false, num: 42 }")
+    }
+
+    #[test]
+    fn test_display_tagged_rec() {
+        let mut values = Record::new();
+        values.insert("tag".to_string(), Value::String("Foo".to_string()));
+        values.insert("value".to_string(), Value::Tuple(vec![].into()));
+        assert_display(Value::Record(values), "Foo");
+
+        let mut values = Record::new();
+        values.insert("tag".to_string(), Value::String("Foo".to_string()));
+        values.insert(
+            "value".to_string(),
+            Value::Tuple(vec![Value::Number(42)].into()),
+        );
+        assert_display(Value::Record(values), "Foo(42)");
     }
 
     fn assert_display(value: Value, expected: &str) {

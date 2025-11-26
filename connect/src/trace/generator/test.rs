@@ -10,8 +10,16 @@ pub struct TestConfig {
 }
 
 impl Config for TestConfig {
+    fn seed(&self) -> &str {
+        self.seed.as_str()
+    }
+
+    fn n_traces(&self) -> usize {
+        return self.max_samples.unwrap_or(DEFAULT_TRACES);
+    }
+
     fn to_command(&self, tmpdir: &Path) -> Command {
-        let n_traces = self.max_samples.unwrap_or(DEFAULT_TRACES).to_string();
+        let n_traces = self.n_traces().to_string();
         let mut cmd = Command::new("quint");
         cmd.arg("test")
             .arg(Path::new(&self.spec))

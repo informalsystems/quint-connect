@@ -64,7 +64,7 @@ pub(crate) fn expand(args: TokenStream, item: TokenStream) -> TokenStream {
 
     quote! {
         #[test]
-        fn #test_ident() {
+        fn #test_ident() -> anyhow::Result<()> {
             let driver = #test_block;
             let config = quint_connect::runner::Config {
                 test_name: #test_name.to_string(),
@@ -78,7 +78,7 @@ pub(crate) fn expand(args: TokenStream, item: TokenStream) -> TokenStream {
                     seed: #seed.to_string(),
                 }
             };
-            quint_connect::runner::run_test(driver, config);
+            quint_connect::runner::run_test(driver, config)
         }
     }
     .into()
