@@ -17,26 +17,30 @@ impl Step {
             bail!("Expected state to be a `Value::Record`")
         };
 
-        let action_taken = state
-            .remove("mbt::actionTaken")
-            .ok_or(anyhow!("Missing `mbt::actionTaken` variable in the trace"))
-            .and_then(|value| {
-                String::deserialize(value).context("Failed to decode `mbt::actionTaken` variable")
-            })?;
-
-        let nondet_picks = state
-            .remove("mbt::nondetPicks")
-            .ok_or(anyhow!("Missing `mbt::nondetPicks` variable in the trace"))
-            .and_then(|value| {
-                NondetPicks::new(value).context("Failed to extract nondet picks from trace")
-            })?;
-
         Ok(Self {
-            action_taken,
-            nondet_picks,
+            action_taken: extract_action_taken(&mut state)?,
+            nondet_picks: extract_nondet_picks(&mut state)?,
             state,
         })
     }
+}
+
+fn extract_nondet_picks(state: &mut Record) -> Result<NondetPicks> {
+    state
+        .remove("mbt::nondetPicks")
+        .ok_or(anyhow!("Missing `mbt::nondetPicks` variable in the trace"))
+        .and_then(|value| {
+            NondetPicks::new(value).context("Failed to extract nondet picks from trace")
+        })
+}
+
+fn extract_action_taken(state: &mut Record) -> Result<String> {
+    state
+        .remove("mbt::actionTaken")
+        .ok_or(anyhow!("Missing `mbt::actionTaken` variable in the trace"))
+        .and_then(|value| {
+            String::deserialize(value).context("Failed to decode `mbt::actionTaken` variable")
+        })
 }
 
 #[cfg(test)]
