@@ -7,7 +7,7 @@ pub trait State<D>: PartialEq + DeserializeOwned + Debug {
     fn from_driver(driver: &D) -> Result<Self>;
 
     fn from_spec(value: Value) -> Result<Self> {
-        Ok(Self::deserialize(value).context("Failed to deserialize specification's state")?)
+        Self::deserialize(value).context("Failed to deserialize specification's state")
     }
 }
 
