@@ -213,7 +213,8 @@ impl NondetPick {
                 let #name: Option<#ty> = step
                     .nondet_picks
                     .get(#name_str)
-                    .map(|nondet| nondet.try_into().unwrap());
+                    .map(|nondet| nondet.try_into())
+                    .transpose()?;
             }
         }
     }
