@@ -1,9 +1,10 @@
 mod util;
 
-pub(crate) use util::*;
-
 #[doc(hidden)]
 pub(crate) use colored::Colorize;
+pub(crate) use util::*;
+
+pub(crate) const VERBOSE: bool = option_env!("QUINT_VERBOSE").is_some();
 
 macro_rules! title {
     ($fmt:literal $(, $args:expr)*) => {
@@ -32,7 +33,9 @@ macro_rules! error {
 
 macro_rules! trace {
     ($fmt:literal $(, $args:expr)*) => {
-        eprintln!("{}", crate::logger::indent!(3, $fmt $(,$args)*).dimmed().bright_white());
+        if crate::logger::VERBOSE {
+            eprintln!("{}", crate::logger::indent!(3, $fmt $(,$args)*).dimmed().bright_white());
+        }
     };
 }
 

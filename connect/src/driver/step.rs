@@ -12,7 +12,7 @@ use std::fmt;
 pub struct Step {
     pub action_taken: String,
     pub nondet_picks: NondetPicks,
-    state: Record,
+    pub(crate) state: Record,
 }
 
 impl Step {

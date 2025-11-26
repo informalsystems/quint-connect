@@ -1,14 +1,14 @@
+mod state;
 mod step;
 
 pub mod nondet;
+pub use state::State;
 pub use step::Step;
-
-use serde::de::DeserializeOwned;
 
 pub type Result = anyhow::Result<()>;
 
-pub trait Driver {
-    type State: DeserializeOwned;
+pub trait Driver: Sized {
+    type State: State<Self>;
 
     fn step(&mut self, step: &Step) -> Result;
 }

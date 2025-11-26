@@ -1,29 +1,35 @@
 use crate::game::*;
 use quint_connect::*;
 use serde::Deserialize;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
-#[derive(Deserialize, Debug)]
+#[derive(Eq, PartialEq, Deserialize, Debug)]
 #[serde(tag = "tag", content = "value")]
 enum Square {
     Occupied(Player),
     Empty,
 }
 
-#[derive(Deserialize, Debug)]
-struct SpecBoard(HashMap<usize, HashMap<usize, Square>>);
+#[derive(Eq, PartialEq, Deserialize, Debug)]
+struct GameState {
+    board: BTreeMap<usize, BTreeMap<usize, Square>>,
+    #[serde(rename = "nextTurn")]
+    next_turn: Player,
+}
 
-impl From<SpecBoard> for GameBoard {
-    fn from(value: SpecBoard) -> Self {
-        let mut board = Self::default();
-        for (x, col) in value.0 {
-            for (y, square) in col {
-                if let Square::Occupied(player) = square {
-                    board[y - 1][x - 1] = Some(player);
-                }
+impl State<TicTacToeDriver> for GameState {
+    fn from_driver(driver: &TicTacToeDriver) -> anyhow::Result<Self> {
+        let mut board: BTreeMap<usize, BTreeMap<usize, Square>> = BTreeMap::new();
+        for (col, x) in driver.game.board.iter().zip(1..) {
+            for (cell, y) in col.iter().zip(1..) {
+                let square = cell.map(Square::Occupied).unwrap_or(Square::Empty);
+                board.entry(y).or_default().insert(x, square);
             }
         }
-        board
+        Ok(Self {
+            board,
+            next_turn: driver.game.next_turn,
+        })
     }
 }
 
@@ -33,18 +39,16 @@ struct TicTacToeDriver {
 }
 
 impl Driver for TicTacToeDriver {
-    type State = ();
+    type State = GameState;
 
     fn step(&mut self, step: &Step) -> Result {
         switch!(step {
             init => self.game = TicTacToe::default(),
-            MoveX(corner: Position?, coordinate: Position?) => {
-                match corner.or(coordinate).map(to_game_pos) {
-                    Some(pos) => self.game.move_to(pos, Player::X),
-                    None => self.game.move_to((1, 1), Player::X),
-                }
-            }
-            MoveO(coordinate) => self.game.move_to(to_game_pos(coordinate), Player::O)
+            MoveX(corner?, coordinate?) => match corner.or(coordinate) {
+                Some(pos) => self.game.move_to(to_game_pos(pos), Player::X),
+                None => self.game.move_to((1, 1), Player::X)
+            },
+            MoveO(coordinate) => self.game.move_to(to_game_pos(coordinate), Player::O),
         })
     }
 }
