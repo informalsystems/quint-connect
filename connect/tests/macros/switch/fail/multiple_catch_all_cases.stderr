@@ -1,10 +1,10 @@
 error: unexpected end of input, switch! has more than one _ case
-  --> tests/macros/switch/fail/multiple_catch_all_cases.rs:7:9
+  --> tests/macros/switch/fail/multiple_catch_all_cases.rs:9:9
    |
- 7 | /         switch!(step {
- 8 | |             _ => todo!(),
- 9 | |             _ => todo!(),
-10 | |         })
+ 9 | /         switch!(step {
+10 | |             _ => todo!(),
+11 | |             _ => todo!(),
+12 | |         })
    | |__________^
    |
    = note: this error originates in the macro `switch` (in Nightly builds, run with -Z macro-backtrace for more info)
