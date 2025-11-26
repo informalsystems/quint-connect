@@ -39,13 +39,13 @@ fn replay_traces<D: Driver>(mut driver: D, traces: Traces) -> Result<()> {
 
     for (trace, t) in traces.zip(1..) {
         trace!("[Trace {}]", t);
+
         for (state, s) in trace?.states.into_iter().zip(1..) {
             let step = Step::new(state.value)?;
             trace!("[Step {}]\n{}\n", s, step);
-            if step.action_taken.is_empty() {
-                continue; // stuttered?
+            if !step.action_taken.is_empty() {
+                driver.step(&step)?;
             }
-            driver.step(&step)?;
         }
     }
 

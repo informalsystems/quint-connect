@@ -51,7 +51,7 @@ impl fmt::Display for Step {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Action taken:")?;
         if self.action_taken.is_empty() {
-            writeln!(f, " <stuttering>")?;
+            writeln!(f, " <stuttered>")?;
         } else {
             writeln!(f, " {}", self.action_taken)?;
         }
@@ -122,19 +122,19 @@ mod tests {
 
     #[test]
     fn test_empty_step() {
-        let action = Value::String("init".to_string());
+        let action = Value::String("".to_string());
 
         let mut state = Record::new();
         state.insert("mbt::actionTaken".to_string(), action);
         state.insert("mbt::nondetPicks".to_string(), Value::Record(Record::new()));
 
         let step = Step::new(Value::Record(state)).unwrap();
-        assert_eq!(step.action_taken, "init");
+        assert_eq!(step.action_taken, "");
         assert!(step.nondet_picks.is_empty());
 
         assert_eq!(
             format!("{}", step),
-            "Action taken: init\n\
+            "Action taken: <stuttered>\n\
              Nondet picks: <none>\n\
              Next state: <none>"
         );
