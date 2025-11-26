@@ -50,7 +50,7 @@ fn replay_traces(mut driver: impl Driver, traces: Traces) -> Result<()> {
     for (trace, t) in traces.zip(1..) {
         trace!("[Trace {}]", t);
 
-        for (state, s) in trace?.states.into_iter().zip(1..) {
+        for (state, s) in trace?.states.into_iter().zip(0..) {
             let step = Step::new(state.value)?;
             trace!("[Step {}]\n{}\n", s, step);
             if !step.action_taken.is_empty() {
