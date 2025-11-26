@@ -1,9 +1,11 @@
 use crate::itf::{
+    display::ValueDisplay,
     option::OptionValue,
     value::{Record, Value},
 };
 use anyhow::{Context, Result, bail};
 use serde::de::DeserializeOwned;
+use std::fmt;
 
 pub struct NondetPicks(Record);
 
@@ -36,6 +38,25 @@ impl<'a> NondetPick<'a> {
         T: DeserializeOwned,
     {
         T::deserialize(self.0.clone()).context("Failed to deserialize nondet pick")
+    }
+}
+
+impl fmt::Display for NondetPicks {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        if self.0.is_empty() {
+            write!(f, "No nondet picks available")?;
+        } else {
+            writeln!(f, "Nondet picks:")?;
+
+            let mut iter = self.0.iter();
+            let (key, value) = iter.next().unwrap();
+            write!(f, "+ {}: {}", key, value.display())?;
+
+            for (key, value) in iter {
+                write!(f, "\n+ {}: {}", key, value.display())?;
+            }
+        }
+        Ok(())
     }
 }
 
@@ -79,5 +100,27 @@ mod tests {
         let nondet = Value::Number(42);
         let nondet = NondetPick(&nondet);
         nondet.try_into::<bool>().unwrap();
+    }
+
+    #[test]
+    fn test_display_nondet_picks() {
+        let empty = NondetPicks::new(Value::Record(Record::new())).unwrap();
+        assert_eq!(format!("{}", empty), "No nondet picks available");
+
+        let mut option = Record::new();
+        option.insert("tag".to_string(), Value::String("Some".to_string()));
+        option.insert("value".to_string(), Value::Number(42));
+
+        let mut record = Record::new();
+        record.insert("foo".to_string(), Value::Record(option.clone()));
+        record.insert("bar".to_string(), Value::Record(option));
+
+        let non_empty = NondetPicks::new(Value::Record(record)).unwrap();
+        assert_eq!(
+            format!("{}", non_empty),
+            "Nondet picks:\n\
+             + bar: 42\n\
+             + foo: 42"
+        );
     }
 }
