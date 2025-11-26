@@ -72,7 +72,7 @@ fn check_state<D: Driver>(driver: &D, step: Step) -> Result<()> {
         let right = format!("{:#?}", driver_state);
         let diff = TextDiff::from_lines(&left, &right);
 
-        error!("Specifidation and implementation states diverge");
+        error!("Specification and implementation states diverge");
         trace!(
             "{}",
             diff.unified_diff()

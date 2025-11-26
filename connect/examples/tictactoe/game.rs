@@ -23,7 +23,7 @@ impl TicTacToe {
 
         let (x, y) = pos;
         let prev = self.board[y][x].replace(player);
-        assert!(prev.is_none(), "moving to ocupied cell");
+        assert!(prev.is_none(), "moving to occupied cell");
 
         self.next_turn = match player {
             Player::X => Player::O,
