@@ -1,4 +1,5 @@
 mod logger;
-pub(crate) mod util;
+mod util;
 
 pub use logger::*;
+pub use util::*;

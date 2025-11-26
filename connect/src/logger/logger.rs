@@ -9,25 +9,25 @@ macro_rules! title {
 
 macro_rules! info {
     ($fmt:literal $(, $args:expr)*) => {
-        eprintln!("{}", crate::logger::util::indent!(2, $fmt $(,$args)*));
+        eprintln!("{}", crate::logger::indent!(2, $fmt $(,$args)*));
     };
 }
 
 macro_rules! success {
     ($fmt:literal $(, $args:expr)*) => {
-        eprintln!("{}", crate::logger::util::indent!(2, $fmt $(,$args)*).bold().green());
+        eprintln!("{}", crate::logger::indent!(2, $fmt $(,$args)*).bold().green());
     };
 }
 
 macro_rules! error {
     ($fmt:literal $(, $args:expr)*) => {
-        eprintln!("{}", crate::logger::util::indent!(2, $fmt $(,$args)*).bold().red());
+        eprintln!("{}", crate::logger::indent!(2, $fmt $(,$args)*).bold().red());
     };
 }
 
 macro_rules! trace {
     ($fmt:literal $(, $args:expr)*) => {
-        eprintln!("{}", crate::logger::util::indent!(2, $fmt $(,$args)*).dimmed().bright_white());
+        eprintln!("{}", crate::logger::indent!(2, $fmt $(,$args)*).dimmed().bright_white());
     };
 }
 
