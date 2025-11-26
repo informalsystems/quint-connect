@@ -25,6 +25,10 @@ impl NondetPicks {
         Ok(Self(nondets))
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+
     pub fn get<'a>(&'a self, var: &str) -> Option<NondetPick<'a>> {
         self.0.get(var).map(NondetPick)
     }
@@ -43,15 +47,9 @@ impl<'a> NondetPick<'a> {
 
 impl fmt::Display for NondetPicks {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        if self.0.is_empty() {
-            write!(f, "No nondet picks available")?;
-        } else {
-            writeln!(f, "Nondet picks:")?;
-
-            let mut iter = self.0.iter();
-            let (key, value) = iter.next().unwrap();
+        let mut iter = self.0.iter();
+        if let Some((key, value)) = iter.next() {
             write!(f, "+ {}: {}", key, value.display())?;
-
             for (key, value) in iter {
                 write!(f, "\n+ {}: {}", key, value.display())?;
             }
@@ -105,7 +103,7 @@ mod tests {
     #[test]
     fn test_display_nondet_picks() {
         let empty = NondetPicks::new(Value::Record(Record::new())).unwrap();
-        assert_eq!(format!("{}", empty), "No nondet picks available");
+        assert_eq!(format!("{}", empty), "");
 
         let mut option = Record::new();
         option.insert("tag".to_string(), Value::String("Some".to_string()));
@@ -118,8 +116,7 @@ mod tests {
         let non_empty = NondetPicks::new(Value::Record(record)).unwrap();
         assert_eq!(
             format!("{}", non_empty),
-            "Nondet picks:\n\
-             + bar: 42\n\
+            "+ bar: 42\n\
              + foo: 42"
         );
     }

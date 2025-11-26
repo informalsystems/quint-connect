@@ -7,13 +7,13 @@ pub(crate) trait ValueDisplay {
 
 impl ValueDisplay for Value {
     fn display(&self) -> impl Display {
-        AsQuint(self)
+        AsQuintValue(self)
     }
 }
 
-struct AsQuint<'a>(&'a Value);
+struct AsQuintValue<'a>(&'a Value);
 
-impl Display for AsQuint<'_> {
+impl Display for AsQuintValue<'_> {
     fn fmt(&self, f: &mut Formatter) -> Result {
         match self.0 {
             Value::Bool(value) => write!(f, "{}", value),
@@ -69,9 +69,9 @@ fn write_rec(f: &mut Formatter, rec: &Record) -> Result {
     write!(f, "{{ ")?;
     let mut iter = rec.iter();
     if let Some((key, value)) = iter.next() {
-        write!(f, "\"{}\": {}", key, value.display())?;
+        write!(f, "{}: {}", key, value.display())?;
         for (key, value) in iter {
-            write!(f, ", \"{}\": {}", key, value.display())?;
+            write!(f, ", {}: {}", key, value.display())?;
         }
     }
     write!(f, " }}")
@@ -127,7 +127,7 @@ mod tests {
         let mut values = Record::new();
         values.insert("num".to_string(), Value::Number(42));
         values.insert("bool".to_string(), Value::Bool(false));
-        assert_display(Value::Record(values), "{ \"bool\": false, \"num\": 42 }")
+        assert_display(Value::Record(values), "{ bool: false, num: 42 }")
     }
 
     fn assert_display(value: Value, expected: &str) {

@@ -1,9 +1,13 @@
 use crate::{
     driver::nondet::NondetPicks,
-    itf::value::{Record, Value},
+    itf::{
+        display::ValueDisplay,
+        value::{Record, Value},
+    },
 };
 use anyhow::{Context, Result, anyhow, bail};
 use serde::Deserialize;
+use std::fmt;
 
 pub struct Step {
     pub action_taken: String,
@@ -43,6 +47,29 @@ fn extract_action_taken(state: &mut Record) -> Result<String> {
         })
 }
 
+impl fmt::Display for Step {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(f, "Action taken: {}", self.action_taken)?;
+
+        write!(f, "Nondet picks:")?;
+        if self.nondet_picks.is_empty() {
+            writeln!(f, " <none>")?;
+        } else {
+            writeln!(f, "\n{}", self.nondet_picks)?;
+        }
+
+        write!(f, "Next state:")?;
+        if self.state.is_empty() {
+            write!(f, " <none>")?;
+        } else {
+            for (key, value) in self.state.iter() {
+                write!(f, "\n+ {}: {}", key, value.display())?;
+            }
+        }
+        Ok(())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -58,9 +85,14 @@ mod tests {
         let mut nondets = Record::new();
         nondets.insert("n".to_string(), Value::Record(nondet));
 
+        let mut procs = Record::new();
+        procs.insert("p1".to_string(), Value::Number(42));
+        procs.insert("p2".to_string(), Value::Number(44));
+
         let mut state = Record::new();
         state.insert("mbt::actionTaken".to_string(), action);
         state.insert("mbt::nondetPicks".to_string(), Value::Record(nondets));
+        state.insert("procs".to_string(), Value::Record(procs));
 
         let step = Step::new(Value::Record(state)).unwrap();
         assert_eq!(step.action_taken, "init");
@@ -71,6 +103,35 @@ mod tests {
                 .try_into::<i64>()
                 .unwrap(),
             42
+        );
+
+        assert_eq!(
+            format!("{}", step),
+            "Action taken: init\n\
+             Nondet picks:\n\
+             + n: 42\n\
+             Next state:\n\
+             + procs: { p1: 42, p2: 44 }"
+        );
+    }
+
+    #[test]
+    fn test_empty_step() {
+        let action = Value::String("init".to_string());
+
+        let mut state = Record::new();
+        state.insert("mbt::actionTaken".to_string(), action);
+        state.insert("mbt::nondetPicks".to_string(), Value::Record(Record::new()));
+
+        let step = Step::new(Value::Record(state)).unwrap();
+        assert_eq!(step.action_taken, "init");
+        assert!(step.nondet_picks.is_empty());
+
+        assert_eq!(
+            format!("{}", step),
+            "Action taken: init\n\
+             Nondet picks: <none>\n\
+             Next state: <none>"
         );
     }
 
