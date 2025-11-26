@@ -61,7 +61,7 @@ impl Switch {
         //     match step.action_taken.as_str() {
         //         _ => {
         //             todo!();
-        //             Status::Ok // <- unreachable code warning
+        //             Ok(()) // <- unreachable code warning
         //         }
         //     }
         quote! {
@@ -70,7 +70,7 @@ impl Switch {
                 let step = #step;
                 match step.action_taken.as_str() {
                     #(#cases),*
-                    action => Status::Unimplemented(action.to_string())
+                    action => anyhow::bail!("Unimplemented action `{}`", action)
                 }
             }
         }
@@ -142,7 +142,7 @@ impl Case {
                     #action_str => {
                         #(#nondets)*
                         #handler;
-                        quint_connect::Status::Ok
+                        Ok(())
                     }
                 }
             }
@@ -151,7 +151,7 @@ impl Case {
                 quote! {
                     _ => {
                         #handler;
-                        quint_connect::Status::Ok
+                        Ok(())
                     }
                 }
             }
@@ -200,13 +200,12 @@ impl NondetPick {
         let name_str = name.to_string();
         let ty = ty.map(|ty| quote!(#ty)).unwrap_or_else(|| quote!(_));
 
-        // TODO: avoid unwrap on these?
         if is_required {
             quote! {
                 let #name = step.nondet_picks.get(#name_str);
                 let #name: #ty = match #name {
-                    Some(pick) => pick.try_into().unwrap(),
-                    None => return quint_connect::Status::UnknownPick(#name_str.to_string()),
+                    Some(pick) => pick.try_into()?,
+                    None => anyhow::bail!("Unknown nondet pick `{}`", #name_str.to_string()),
                 };
             }
         } else {
