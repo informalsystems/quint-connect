@@ -1,4 +1,5 @@
 mod driver;
+mod logger;
 mod trace;
 
 pub mod itf;
