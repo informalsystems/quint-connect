@@ -10,7 +10,7 @@ impl TestDriver {
 impl Driver for TestDriver {
     type State = ();
 
-    fn step(&mut self, step: &Step) -> Status {
+    fn step(&mut self, step: &Step) -> Result {
         switch!(step {
             init,
             action1(arg) => self.action(arg),

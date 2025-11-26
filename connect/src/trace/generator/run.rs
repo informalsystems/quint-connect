@@ -17,7 +17,7 @@ impl Config for RunConfig {
     }
 
     fn n_traces(&self) -> usize {
-        return self.max_samples.unwrap_or(DEFAULT_TRACES);
+        self.max_samples.unwrap_or(DEFAULT_TRACES)
     }
 
     fn to_command(&self, tmpdir: &Path) -> Command {

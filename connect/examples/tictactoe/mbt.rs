@@ -35,7 +35,7 @@ struct TicTacToeDriver {
 impl Driver for TicTacToeDriver {
     type State = ();
 
-    fn step(&mut self, step: &Step) -> Status {
+    fn step(&mut self, step: &Step) -> Result {
         switch!(step {
             init => self.game = TicTacToe::default(),
             MoveX(corner: Position?, coordinate: Position?) => {

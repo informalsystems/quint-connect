@@ -30,7 +30,6 @@ pub fn run_test<C: GenConfig>(driver: impl Driver, config: Config<C>) -> Result<
     let traces = generate_traces(&config.gen_config)?;
     replay_traces(driver, traces)?;
 
-    // TODO: print failures in red + seed again
     success!("[OK] {}", config.test_name);
     Ok(())
 }
