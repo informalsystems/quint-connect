@@ -47,7 +47,14 @@ pub fn run_test<C: GenConfig>(driver: impl Driver, config: Config<C>) -> Result<
 fn replay_traces(mut driver: impl Driver, traces: Traces) -> Result<()> {
     info!("Replaying generated traces ...");
 
-    for (trace, t) in traces.zip(1..) {
+    let mut iter = traces.peekable();
+    ensure!(
+        iter.peek().is_some(),
+        "Trace generation produced zero traces.\n\
+         Please check your specification and/or your test configuration."
+    );
+
+    for (trace, t) in iter.zip(1..) {
         trace!("[Trace {}]", t);
 
         for (state, s) in trace?.states.into_iter().zip(0..) {
@@ -55,7 +62,8 @@ fn replay_traces(mut driver: impl Driver, traces: Traces) -> Result<()> {
             trace!("[Step {}]\n{}\n", s, step);
             ensure!(
                 !step.action_taken.is_empty(),
-                "Anonymous action found! Please make sure all actions in the specification are propoerly named."
+                "An anonymous action was found!\n\
+                 Please make sure all actions in the specification are propoerly named."
             );
             driver.step(&step)?;
             check_state(&driver, step)?;
