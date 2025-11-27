@@ -59,7 +59,7 @@ fn to_game_pos(pos: Position) -> Position {
     (x - 1, y - 1)
 }
 
-#[quint_run(spec = "examples/tictactoe/tictactoe.qnt", max_samples = 1)]
+#[quint_run(spec = "examples/tictactoe/spec/tictactoe.qnt", max_samples = 1)]
 fn test_tictactoe() -> impl Driver {
     TicTacToeDriver::default()
 }
