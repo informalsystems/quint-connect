@@ -3,18 +3,20 @@ use crate::itf::{
     option::OptionValue,
     value::{Record, Value},
 };
-use anyhow::{Context, Result, bail};
-use serde::de::DeserializeOwned;
+use anyhow::{Result, bail};
 use std::fmt;
 
 pub struct NondetPicks(Record);
 
 impl NondetPicks {
-    pub(crate) fn new(value: Value) -> Result<Self> {
+    pub(crate) fn from_value(value: Value) -> Result<Self> {
         let Value::Record(record) = value else {
             bail!("Expected nondet picks to be a `Value::Record`")
         };
+        Ok(Self::from_record(record))
+    }
 
+    pub(crate) fn from_record(record: Record) -> Self {
         let mut nondets = Record::new();
         for (key, value) in record {
             if let Some(value) = value.into_option() {
@@ -22,26 +24,19 @@ impl NondetPicks {
             }
         }
 
-        Ok(Self(nondets))
+        Self(nondets)
+    }
+
+    pub(crate) fn empty() -> Self {
+        Self(Record::new())
     }
 
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
 
-    pub fn get<'a>(&'a self, var: &str) -> Option<NondetPick<'a>> {
-        self.0.get(var).map(NondetPick)
-    }
-}
-
-pub struct NondetPick<'a>(&'a Value);
-
-impl<'a> NondetPick<'a> {
-    pub fn try_into<T>(self) -> Result<T>
-    where
-        T: DeserializeOwned,
-    {
-        T::deserialize(self.0.clone()).context("Failed to deserialize nondet pick")
+    pub fn get<'a>(&'a self, var: &str) -> Option<&'a Value> {
+        self.0.get(var)
     }
 }
 
@@ -66,7 +61,7 @@ mod tests {
     #[should_panic(expected = "Expected nondet picks to be a `Value::Record`")]
     fn test_fail_to_build_nondet_picks() {
         let value = Value::Number(42);
-        NondetPicks::new(value).unwrap();
+        NondetPicks::from_value(value).unwrap();
     }
 
     #[test]
@@ -78,31 +73,15 @@ mod tests {
         let mut record = Record::new();
         record.insert("foo".to_string(), Value::Record(option));
 
-        let nondets = NondetPicks::new(Value::Record(record)).unwrap();
+        let nondets = NondetPicks::from_value(Value::Record(record)).unwrap();
         let nondet = nondets.get("foo");
 
         assert!(nondet.is_some(), "failed to find nondet value")
     }
 
     #[test]
-    fn test_decode_nondet_pick() {
-        let nondet = Value::Number(42);
-        let nondet = NondetPick(&nondet);
-        let value: i64 = nondet.try_into().unwrap();
-        assert_eq!(value, 42);
-    }
-
-    #[test]
-    #[should_panic(expected = "invalid type: integer `42`, expected a boolean")]
-    fn test_failed_to_decode_nondet_pick() {
-        let nondet = Value::Number(42);
-        let nondet = NondetPick(&nondet);
-        nondet.try_into::<bool>().unwrap();
-    }
-
-    #[test]
     fn test_display_nondet_picks() {
-        let empty = NondetPicks::new(Value::Record(Record::new())).unwrap();
+        let empty = NondetPicks::from_value(Value::Record(Record::new())).unwrap();
         assert_eq!(format!("{}", empty), "");
 
         let mut option = Record::new();
@@ -113,7 +92,7 @@ mod tests {
         record.insert("foo".to_string(), Value::Record(option.clone()));
         record.insert("bar".to_string(), Value::Record(option));
 
-        let non_empty = NondetPicks::new(Value::Record(record)).unwrap();
+        let non_empty = NondetPicks::from_value(Value::Record(record)).unwrap();
         assert_eq!(
             format!("{}", non_empty),
             "+ bar: 42\n\

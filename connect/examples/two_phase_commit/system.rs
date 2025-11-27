@@ -1,11 +1,16 @@
-#[derive(Copy, Clone)]
+use serde::Deserialize;
+
+#[derive(Eq, PartialEq, Deserialize, Default, Copy, Clone, Debug)]
+#[serde(tag = "tag")]
 pub enum Stage {
+    #[default]
     Working,
     Prepared,
     Committed,
     Aborted,
 }
 
+#[derive(Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug)]
 pub enum Message {
     Prepare,
     Prepared,
@@ -19,14 +24,21 @@ pub enum Node {
 }
 
 impl Node {
-    pub fn timeout(&mut self) -> Vec<Message> {
+    pub fn stage(&self) -> Stage {
+        match self {
+            Node::Coordinator(coord) => coord.stage,
+            Node::Participant(part) => part.stage,
+        }
+    }
+
+    pub fn timeout(&mut self) -> Option<Message> {
         match self {
             Node::Coordinator(coord) => coord.timeout(),
             Node::Participant(part) => part.timeout(),
         }
     }
 
-    pub fn receive(&mut self, msg: Message) -> Vec<Message> {
+    pub fn receive(&mut self, msg: Message) -> Option<Message> {
         match self {
             Node::Coordinator(coord) => coord.receive(msg),
             Node::Participant(part) => part.receive(msg),
@@ -49,71 +61,66 @@ impl Coordinator {
         }
     }
 
-    pub fn start(&mut self) -> Message {
+    pub fn start(&self) -> Message {
         Message::Prepare
     }
 
-    fn timeout(&mut self) -> Vec<Message> {
+    pub fn timeout(&mut self) -> Option<Message> {
         match self.stage {
             Stage::Working => {
                 self.stage = Stage::Aborted;
-                vec![Message::Abort]
+                Some(Message::Abort)
             }
-            _ => unreachable!(),
+            _ => None,
         }
     }
 
-    fn receive(&mut self, msg: Message) -> Vec<Message> {
+    pub fn receive(&mut self, msg: Message) -> Option<Message> {
         match (self.stage, msg) {
-            (Stage::Working, Message::Prepare) => {
+            (Stage::Working, Message::Prepared) => {
                 self.prepared += 1;
                 if self.prepared == self.quorum {
                     self.stage = Stage::Committed;
-                    return vec![Message::Commit];
+                    return Some(Message::Commit);
                 }
-                vec![]
+                None
             }
-            _ => unreachable!(),
+            _ => None,
         }
     }
 }
 
+#[derive(Default)]
 pub struct Participant {
     stage: Stage,
 }
 
 impl Participant {
-    pub fn new() -> Self {
-        Self {
-            stage: Stage::Working,
-        }
-    }
-
-    fn timeout(&mut self) -> Vec<Message> {
+    pub fn timeout(&mut self) -> Option<Message> {
         match self.stage {
             Stage::Working => {
                 self.stage = Stage::Aborted;
-                vec![]
+                None
             }
-            _ => unreachable!(),
+            _ => None,
         }
     }
 
-    fn receive(&mut self, msg: Message) -> Vec<Message> {
+    pub fn receive(&mut self, msg: Message) -> Option<Message> {
         match (self.stage, msg) {
             (Stage::Working, Message::Prepare) => {
                 self.stage = Stage::Prepared;
-                vec![Message::Prepared]
+                Some(Message::Prepared)
             }
             (_, Message::Abort) => {
                 self.stage = Stage::Aborted;
-                vec![]
+                None
             }
             (_, Message::Commit) => {
                 self.stage = Stage::Committed;
-                vec![]
+                None
             }
-            _ => unreachable!(),
+            _ => None,
         }
     }
 }

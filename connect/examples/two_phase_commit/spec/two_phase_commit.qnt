@@ -26,12 +26,12 @@ module two_phase_commit {
 
   type ActionTaken =
     | Init
-    | SpontaneouslyPrepares(Node)
-    | SpontaneouslyAborts(Node)
-    | AbortsAsInstructed(Node)
-    | CommitsAsInstructed(Node)
-    | DecidesOnCommit(Node)
-    | DecidesOnAbort(Node)
+    | SpontaneouslyPrepares({node: Node})
+    | SpontaneouslyAborts({node: Node})
+    | AbortsAsInstructed({node: Node})
+    | CommitsAsInstructed({node: Node})
+    | DecidesOnCommit({node: Node})
+    | DecidesOnAbort({node: Node})
 
   /* Boilerplate */
   type LocalState = choreo::LocalState[Node, StateFields]
@@ -60,7 +60,11 @@ module two_phase_commit {
         post_state: { ...ctx.state, stage: Prepared },
         effects: Set(
           choreo::Broadcast(ParticipantPrepared(ctx.state.process_id)),
-          choreo::CustomEffect(RecordAction(SpontaneouslyPrepares(ctx.state.process_id)))
+          choreo::CustomEffect(RecordAction(
+            SpontaneouslyPrepares({
+              node: ctx.state.process_id
+            })
+          ))
         )
       })
     } else {
@@ -73,7 +77,11 @@ module two_phase_commit {
       Set({
         post_state: { ...ctx.state, stage: Aborted },
         effects: Set(
-          choreo::CustomEffect(RecordAction(SpontaneouslyAborts(ctx.state.process_id)))
+          choreo::CustomEffect(RecordAction(
+            SpontaneouslyAborts({
+              node: ctx.state.process_id
+            })
+          ))
         )
       })
     } else {
@@ -86,7 +94,11 @@ module two_phase_commit {
       Set({
         post_state: { ...ctx.state, stage: Aborted },
         effects: Set(
-          choreo::CustomEffect(RecordAction(AbortsAsInstructed(ctx.state.process_id)))
+          choreo::CustomEffect(RecordAction(
+            AbortsAsInstructed({
+              node: ctx.state.process_id
+            })
+          ))
         )
       })
     } else {
@@ -99,7 +111,11 @@ module two_phase_commit {
       Set({
         post_state: { ...ctx.state, stage: Committed },
         effects: Set(
-          choreo::CustomEffect(RecordAction(CommitsAsInstructed(ctx.state.process_id)))
+          choreo::CustomEffect(RecordAction(
+            CommitsAsInstructed({
+              node: ctx.state.process_id
+            })
+          ))
         )
       })
     } else {
@@ -116,7 +132,11 @@ module two_phase_commit {
         post_state: { ...ctx.state, stage: Committed },
         effects: Set(
           choreo::Broadcast(CoordinatorCommit),
-          choreo::CustomEffect(RecordAction(DecidesOnCommit(ctx.state.process_id)))
+          choreo::CustomEffect(RecordAction(
+            DecidesOnCommit({
+              node: ctx.state.process_id
+            })
+          ))
         )
       })
     } else {
@@ -130,7 +150,11 @@ module two_phase_commit {
         post_state: { ...ctx.state, stage: Aborted },
         effects: Set(
           choreo::Broadcast(CoordinatorAbort),
-          choreo::CustomEffect(RecordAction(DecidesOnAbort(ctx.state.process_id)))
+          choreo::CustomEffect(RecordAction(
+            DecidesOnAbort({
+              node: ctx.state.process_id
+            })
+          ))
         )
       })
     } else {

@@ -16,35 +16,81 @@ pub struct Step {
 }
 
 impl Step {
-    pub(crate) fn new(state: Value) -> Result<Self> {
-        let Value::Record(mut state) = state else {
-            bail!("Expected state to be a `Value::Record`")
-        };
+    pub(crate) fn from_mbt_state(mut state: Record) -> Result<Self> {
+        Ok(Self {
+            action_taken: extract_default_action_taken(&mut state)?,
+            nondet_picks: extract_default_nondet_picks(&mut state)?,
+            state,
+        })
+    }
+
+    pub fn from_sum_type(mut state: Record, path: &[&str]) -> Result<Self> {
+        let ty = find_sum_type(&state, path)?;
+        let action_taken = extract_action_taken_from_sum_type(ty)?;
+        let nondet_picks = extract_nondet_picks_from_sum_type(ty)?;
+
+        // Remove unused mbt variables, if available.
+        let _ = state.remove("mbt::actionTaken");
+        let _ = state.remove("mbt::nondetPicks");
 
         Ok(Self {
-            action_taken: extract_action_taken(&mut state)?,
-            nondet_picks: extract_nondet_picks(&mut state)?,
+            action_taken,
+            nondet_picks,
             state,
         })
     }
 }
 
-fn extract_nondet_picks(state: &mut Record) -> Result<NondetPicks> {
-    state
-        .remove("mbt::nondetPicks")
-        .ok_or(anyhow!("Missing `mbt::nondetPicks` variable in the trace"))
-        .and_then(|value| {
-            NondetPicks::new(value).context("Failed to extract nondet picks from trace")
-        })
-}
-
-fn extract_action_taken(state: &mut Record) -> Result<String> {
+fn extract_default_action_taken(state: &mut Record) -> Result<String> {
     state
         .remove("mbt::actionTaken")
         .ok_or(anyhow!("Missing `mbt::actionTaken` variable in the trace"))
         .and_then(|value| {
             String::deserialize(value).context("Failed to decode `mbt::actionTaken` variable")
         })
+}
+
+fn extract_default_nondet_picks(state: &mut Record) -> Result<NondetPicks> {
+    state
+        .remove("mbt::nondetPicks")
+        .ok_or(anyhow!("Missing `mbt::nondetPicks` variable in the trace"))
+        .and_then(|value| {
+            NondetPicks::from_value(value).context("Failed to extract nondet picks from trace")
+        })
+}
+
+fn find_sum_type<'a>(state: &'a Record, path: &[&str]) -> Result<&'a Record> {
+    let mut rec = state;
+    for segment in path {
+        let Some(Value::Record(next)) = rec.get(segment) else {
+            bail!("Can not find Quint sum type at {:?}", segment)
+        };
+        rec = next;
+    }
+    Ok(rec)
+}
+
+fn extract_action_taken_from_sum_type(ty: &Record) -> Result<String> {
+    let Some(Value::String(action)) = ty.get("tag") else {
+        bail!(
+            "Expected action taken to be the sum type's `tag` string.\n\
+             Type: {:#?}",
+            ty
+        )
+    };
+    Ok(action.clone())
+}
+
+fn extract_nondet_picks_from_sum_type(ty: &Record) -> Result<NondetPicks> {
+    match ty.get("value") {
+        Some(Value::Tuple(t)) if t.is_empty() => Ok(NondetPicks::empty()),
+        Some(Value::Record(rec)) => Ok(NondetPicks::from_record(rec.clone())),
+        _ => bail!(
+            "Expected nondet picks to be the sum type's `value` as a single Record.\n\
+             Type: {:#?}",
+            ty
+        ),
+    }
 }
 
 impl fmt::Display for Step {
@@ -78,6 +124,7 @@ impl fmt::Display for Step {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::itf::Value;
 
     #[test]
     fn test_valid_step() {
@@ -99,16 +146,9 @@ mod tests {
         state.insert("mbt::nondetPicks".to_string(), Value::Record(nondets));
         state.insert("procs".to_string(), Value::Record(procs));
 
-        let step = Step::new(Value::Record(state)).unwrap();
+        let step = Step::from_mbt_state(state).unwrap();
         assert_eq!(step.action_taken, "init");
-        assert_eq!(
-            step.nondet_picks
-                .get("n")
-                .unwrap()
-                .try_into::<i64>()
-                .unwrap(),
-            42
-        );
+        assert_eq!(step.nondet_picks.get("n").unwrap(), &Value::Number(42));
 
         assert_eq!(
             format!("{}", step),
@@ -128,7 +168,7 @@ mod tests {
         state.insert("mbt::actionTaken".to_string(), action);
         state.insert("mbt::nondetPicks".to_string(), Value::Record(Record::new()));
 
-        let step = Step::new(Value::Record(state)).unwrap();
+        let step = Step::from_mbt_state(state).unwrap();
         assert_eq!(step.action_taken, "");
         assert!(step.nondet_picks.is_empty());
 
@@ -141,18 +181,10 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "Expected state to be a `Value::Record`")]
-    fn test_invalid_state_value() {
-        let state = Value::Number(42);
-        Step::new(state).unwrap();
-    }
-
-    #[test]
     #[should_panic(expected = "Missing `mbt::actionTaken` variable in the trace")]
     fn test_no_action_taken() {
         let state = Record::new();
-        let state = Value::Record(state);
-        Step::new(state).unwrap();
+        Step::from_mbt_state(state).unwrap();
     }
 
     #[test]
@@ -160,8 +192,7 @@ mod tests {
     fn test_invalid_action_taken() {
         let mut state = Record::new();
         state.insert("mbt::actionTaken".to_string(), Value::Number(42));
-        let state = Value::Record(state);
-        Step::new(state).unwrap();
+        Step::from_mbt_state(state).unwrap();
     }
 
     #[test]
@@ -172,7 +203,6 @@ mod tests {
             "mbt::actionTaken".to_string(),
             Value::String("init".to_string()),
         );
-        let state = Value::Record(state);
-        Step::new(state).unwrap();
+        Step::from_mbt_state(state).unwrap();
     }
 }

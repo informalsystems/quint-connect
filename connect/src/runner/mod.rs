@@ -58,7 +58,10 @@ fn replay_traces(mut driver: impl Driver, traces: Traces) -> Result<()> {
         trace!("[Trace {}]", t);
 
         for (state, s) in trace?.states.into_iter().zip(0..) {
-            let step = Step::new(state.value)?;
+            let Value::Record(state) = state.value else {
+                bail!("Expected current state to be a Record")
+            };
+            let step = driver.prepare(state)?;
             trace!("[Step {}]\n{}\n", s, step);
             ensure!(
                 !step.action_taken.is_empty(),

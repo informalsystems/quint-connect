@@ -204,7 +204,7 @@ impl NondetPick {
             quote! {
                 let #name = step.nondet_picks.get(#name_str);
                 let #name: #ty = match #name {
-                    Some(pick) => pick.try_into()?,
+                    Some(pick) => <#ty as serde::Deserialize>::deserialize(pick.clone())?,
                     None => anyhow::bail!("Unknown nondet pick `{}`", #name_str.to_string()),
                 };
             }
@@ -213,7 +213,7 @@ impl NondetPick {
                 let #name: Option<#ty> = step
                     .nondet_picks
                     .get(#name_str)
-                    .map(|nondet| nondet.try_into())
+                    .map(|nondet| <#ty as serde::Deserialize>::deserialize(nondet.clone()))
                     .transpose()?;
             }
         }

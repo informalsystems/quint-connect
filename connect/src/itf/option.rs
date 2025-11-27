@@ -6,12 +6,13 @@ pub trait OptionValue {
 
 impl OptionValue for Value {
     fn into_option(self) -> Option<Value> {
-        if let Value::Record(mut record) = self
-            && let Some(Value::String(tag)) = record.get("tag")
-            && tag == "Some"
-        {
-            return record.remove("value");
+        match self {
+            Value::Record(mut rec) => match rec.get("tag") {
+                Some(Value::String(tag)) if tag == "Some" => rec.remove("value"),
+                Some(Value::String(tag)) if tag == "None" => None,
+                _ => Some(Value::Record(rec)),
+            },
+            other => Some(other),
         }
-        None
     }
 }
