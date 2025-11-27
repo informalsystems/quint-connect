@@ -12,7 +12,7 @@ use crate::{
         iter::Traces,
     },
 };
-use anyhow::{Result, bail};
+use anyhow::{Result, bail, ensure};
 use similar::TextDiff;
 
 pub struct Config<C: GenConfig> {
@@ -53,10 +53,12 @@ fn replay_traces(mut driver: impl Driver, traces: Traces) -> Result<()> {
         for (state, s) in trace?.states.into_iter().zip(0..) {
             let step = Step::new(state.value)?;
             trace!("[Step {}]\n{}\n", s, step);
-            if !step.action_taken.is_empty() {
-                driver.step(&step)?;
-                check_state(&driver, step)?;
-            }
+            ensure!(
+                !step.action_taken.is_empty(),
+                "Anonymous action found! Please make sure all actions in the specification are propoerly named."
+            );
+            driver.step(&step)?;
+            check_state(&driver, step)?;
         }
     }
 

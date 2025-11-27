@@ -51,7 +51,7 @@ impl fmt::Display for Step {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Action taken:")?;
         if self.action_taken.is_empty() {
-            writeln!(f, " <stuttered>")?;
+            writeln!(f, " <anonymous>")?;
         } else {
             writeln!(f, " {}", self.action_taken)?;
         }
@@ -134,7 +134,7 @@ mod tests {
 
         assert_eq!(
             format!("{}", step),
-            "Action taken: <stuttered>\n\
+            "Action taken: <anonymous>\n\
              Nondet picks: <none>\n\
              Next state: <none>"
         );

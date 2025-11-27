@@ -156,7 +156,13 @@ module tictactoe {
     MoveX,
     MoveO,
     // If the game is over, we don't need to do anything
-    all { gameOver, board' = board, nextTurn' = nextTurn },
+    stuttered
+  }
+
+  action stuttered = all {
+    gameOver,
+    board' = board,
+    nextTurn' = nextTurn
   }
 
   /* Invariants */

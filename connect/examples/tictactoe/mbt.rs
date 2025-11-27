@@ -49,6 +49,7 @@ impl Driver for TicTacToeDriver {
                 None => self.game.move_to((1, 1), Player::X)
             },
             MoveO(coordinate) => self.game.move_to(to_game_pos(coordinate), Player::O),
+            stuttered => () // do nothing...
         })
     }
 }
