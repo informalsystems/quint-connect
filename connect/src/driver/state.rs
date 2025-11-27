@@ -7,7 +7,10 @@ pub trait State<D>: PartialEq + DeserializeOwned + Debug {
     fn from_driver(driver: &D) -> Result<Self>;
 
     fn from_spec(value: Value) -> Result<Self> {
-        Self::deserialize(value).context("Failed to deserialize specification's state")
+        Self::deserialize(value).context(
+            "Failed to deserialize specification's state.\n\
+             Please check the crate docs for tips and tricks on state deserialization.",
+        )
     }
 }
 
