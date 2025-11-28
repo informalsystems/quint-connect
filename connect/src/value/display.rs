@@ -30,6 +30,20 @@ impl Display for AsQuintValue<'_> {
     }
 }
 
+impl ValueDisplay for Record {
+    fn display(&self) -> impl Display {
+        AsQuintRecord(self)
+    }
+}
+
+struct AsQuintRecord<'a>(&'a Record);
+
+impl Display for AsQuintRecord<'_> {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        write_rec(f, self.0)
+    }
+}
+
 fn write_col<'a, Iter>(f: &mut Formatter, open: &str, elems: Iter, close: &str) -> Result
 where
     Iter: IntoIterator<Item = &'a Value>,
