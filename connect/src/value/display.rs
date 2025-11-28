@@ -1,4 +1,4 @@
-use crate::itf::value::{Map, Record, Value};
+use itf::value::{Map, Record, Value};
 use std::fmt::{Display, Formatter, Result};
 
 pub(crate) trait ValueDisplay {
@@ -97,7 +97,7 @@ fn write_rec(f: &mut Formatter, rec: &Record) -> Result {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::itf::value::BigInt;
+    use itf::value::BigInt;
     use std::collections::{BTreeMap, BTreeSet};
 
     #[test]

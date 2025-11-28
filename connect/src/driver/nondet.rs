@@ -1,11 +1,9 @@
-use crate::itf::{
-    display::ValueDisplay,
-    option::OptionValue,
-    value::{Record, Value},
-};
+use crate::value::{ValueDisplay, ValueOption};
 use anyhow::{Result, bail};
+use itf::value::{Record, Value};
 use std::fmt;
 
+#[doc(hidden)] // public for macro use
 pub struct NondetPicks(Record);
 
 impl NondetPicks {
@@ -23,7 +21,6 @@ impl NondetPicks {
                 nondets.insert(key, value);
             }
         }
-
         Self(nondets)
     }
 

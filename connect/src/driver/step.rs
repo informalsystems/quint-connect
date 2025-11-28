@@ -1,18 +1,16 @@
 use crate::{
     driver::{Path, SpecAnnotations, nondet::NondetPicks},
-    itf::{
-        display::ValueDisplay,
-        value::{Record, Value},
-    },
+    value::ValueDisplay,
 };
 use anyhow::{Context, Result, anyhow, bail};
+use itf::value::{Record, Value};
 use serde::Deserialize;
 use std::fmt;
 
 pub struct Step {
-    #[doc(hidden)]
+    #[doc(hidden)] // public for macro use
     pub action_taken: String,
-    #[doc(hidden)]
+    #[doc(hidden)] // public for macro use
     pub nondet_picks: NondetPicks,
     pub(crate) state: Value,
 }
@@ -168,7 +166,7 @@ impl fmt::Display for Step {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::itf::Value;
+    use itf::Value;
 
     #[test]
     fn test_valid_step() {

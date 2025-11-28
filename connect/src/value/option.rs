@@ -1,10 +1,10 @@
-use crate::itf::Value;
+use itf::Value;
 
-pub trait OptionValue {
+pub(crate) trait ValueOption {
     fn into_option(self) -> Option<Value>;
 }
 
-impl OptionValue for Value {
+impl ValueOption for Value {
     fn into_option(self) -> Option<Value> {
         match self {
             Value::Record(mut rec) => match rec.get("tag") {

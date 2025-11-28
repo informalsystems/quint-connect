@@ -1,5 +1,5 @@
-use crate::itf::Value;
 use anyhow::{Context, Result};
+use itf::Value;
 use serde::de::DeserializeOwned;
 use std::fmt::Debug;
 

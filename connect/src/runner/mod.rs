@@ -5,7 +5,6 @@ pub use seed::*;
 
 use crate::{
     Driver, State, Step,
-    itf::Value,
     logger::*,
     trace::{
         generator::{Config as GenConfig, generate_traces},
@@ -13,6 +12,7 @@ use crate::{
     },
 };
 use anyhow::{Result, bail, ensure};
+use itf::Value;
 use similar::TextDiff;
 
 pub struct Config<C: GenConfig> {
