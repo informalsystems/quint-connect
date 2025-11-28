@@ -1,6 +1,5 @@
 mod util;
 
-#[doc(hidden)]
 pub(crate) use colored::Colorize;
 pub(crate) use util::*;
 
