@@ -65,7 +65,7 @@ fn extract_nondet_from_mbt_var(state: &mut Record) -> Result<NondetPicks> {
         .remove("mbt::nondetPicks")
         .ok_or(anyhow!("Missing `mbt::nondetPicks` variable in the trace"))
         .and_then(|value| {
-            NondetPicks::from_value(value).context("Failed to extract nondet picks from trace")
+            NondetPicks::new(value).context("Failed to extract nondet picks from trace")
         })
 }
 
@@ -126,7 +126,7 @@ fn extract_action_from_sum_type(ty: &Record) -> Result<String> {
 fn extract_nondet_from_sum_type(ty: &Record) -> Result<NondetPicks> {
     match ty.get("value") {
         Some(Value::Tuple(t)) if t.is_empty() => Ok(NondetPicks::empty()),
-        Some(Value::Record(rec)) => Ok(NondetPicks::from_record(rec.clone())),
+        Some(Value::Record(rec)) => Ok(rec.clone().into()),
         _ => bail!(
             "Expected nondet picks to be a sum type variant value as a record.\n\
              Value found: {}",

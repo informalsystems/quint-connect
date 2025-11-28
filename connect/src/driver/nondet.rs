@@ -5,15 +5,8 @@ use std::fmt;
 
 pub struct NondetPicks(Record);
 
-impl NondetPicks {
-    pub(crate) fn from_value(value: Value) -> Result<Self> {
-        let Value::Record(record) = value else {
-            bail!("Expected nondet picks to be a `Value::Record`")
-        };
-        Ok(Self::from_record(record))
-    }
-
-    pub(crate) fn from_record(record: Record) -> Self {
+impl From<Record> for NondetPicks {
+    fn from(record: Record) -> Self {
         let mut nondets = Record::new();
         for (key, value) in record {
             if let Some(value) = value.into_option() {
@@ -21,6 +14,15 @@ impl NondetPicks {
             }
         }
         Self(nondets)
+    }
+}
+
+impl NondetPicks {
+    pub(crate) fn new(value: Value) -> Result<Self> {
+        let Value::Record(record) = value else {
+            bail!("Expected nondet picks to be a `Value::Record`")
+        };
+        Ok(record.into())
     }
 
     pub(crate) fn empty() -> Self {
@@ -57,7 +59,7 @@ mod tests {
     #[should_panic(expected = "Expected nondet picks to be a `Value::Record`")]
     fn test_fail_to_build_nondet_picks() {
         let value = Value::Number(42);
-        NondetPicks::from_value(value).unwrap();
+        NondetPicks::new(value).unwrap();
     }
 
     #[test]
@@ -69,7 +71,7 @@ mod tests {
         let mut record = Record::new();
         record.insert("foo".to_string(), Value::Record(option));
 
-        let nondets = NondetPicks::from_value(Value::Record(record)).unwrap();
+        let nondets = NondetPicks::new(Value::Record(record)).unwrap();
         let nondet = nondets.get("foo");
 
         assert!(nondet.is_some(), "failed to find nondet value")
