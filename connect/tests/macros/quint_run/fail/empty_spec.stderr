@@ -1,0 +1,7 @@
+error: Missing required attribute `spec`
+  --> tests/macros/quint_run/fail/empty_spec.rs:13:1
+   |
+13 | #[quint_run(spec = "")]
+   | ^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: this error originates in the attribute macro `quint_run` (in Nightly builds, run with -Z macro-backtrace for more info)

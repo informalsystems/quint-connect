@@ -1,0 +1,5 @@
+error: Invalid attribute
+  --> tests/macros/quint_run/fail/invalid_attribute.rs:13:32
+   |
+13 | #[quint_run(spec = "spec.qnt", unknown_attr = "value")]
+   |                                ^^^^^^^^^^^^
