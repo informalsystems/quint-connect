@@ -1,29 +1,21 @@
 use crate::system::*;
-use quint_connect::{itf::value::Record, *};
+use quint_connect::*;
 use serde::Deserialize;
 use std::collections::{BTreeMap, BTreeSet};
 
 type NodeId = String;
 
 #[derive(Eq, PartialEq, Deserialize, Debug)]
-struct SystemState {
-    #[serde(rename = "two_phase_commit::choreo::s")]
-    choreo: ChoreoState,
-}
-
-#[derive(Eq, PartialEq, Deserialize, Debug)]
-struct ChoreoState {
-    system: BTreeMap<NodeId, ProcState>,
-}
+struct SpecState(BTreeMap<NodeId, ProcState>);
 
 #[derive(Eq, PartialEq, Deserialize, Debug)]
 struct ProcState {
     stage: Stage,
 }
 
-impl State<TwoPhaseCommitDriver> for SystemState {
+impl State<TwoPhaseCommitDriver> for SpecState {
     fn from_driver(driver: &TwoPhaseCommitDriver) -> Result<Self> {
-        let system = driver
+        let procs = driver
             .processes
             .iter()
             .map(|(id, node)| {
@@ -32,9 +24,7 @@ impl State<TwoPhaseCommitDriver> for SystemState {
             })
             .collect();
 
-        Ok(Self {
-            choreo: ChoreoState { system },
-        })
+        Ok(Self(procs))
     }
 }
 
@@ -45,13 +35,13 @@ struct TwoPhaseCommitDriver {
 }
 
 impl Driver for TwoPhaseCommitDriver {
-    type State = SystemState;
+    type State = SpecState;
 
-    fn prepare(&mut self, state: Record) -> Result<Step> {
-        Step::from_sum_type(
-            state,
-            &["two_phase_commit::choreo::s", "extensions", "actionTaken"],
-        )
+    fn annotations() -> SpecAnnotations {
+        SpecAnnotations {
+            state_location: &["two_phase_commit::choreo::s", "system"],
+            nondet_location: &["two_phase_commit::choreo::s", "extensions", "actionTaken"],
+        }
     }
 
     fn step(&mut self, step: &Step) -> Result {

@@ -6,5 +6,5 @@ pub mod itf;
 #[doc(hidden)]
 pub mod runner;
 
-pub use driver::{Driver, Result, State, Step, nondet};
+pub use driver::{Driver, Result, SpecAnnotations, State, Step, nondet};
 pub use quint_connect_macros::{quint_run, switch};

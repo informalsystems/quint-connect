@@ -5,16 +5,21 @@ pub mod nondet;
 pub use state::State;
 pub use step::Step;
 
-use crate::itf::value::Record;
-
 pub type Result<A = ()> = anyhow::Result<A>;
+pub type Path = &'static [&'static str];
+
+#[derive(Default)]
+pub struct SpecAnnotations {
+    pub state_location: Path,
+    pub nondet_location: Path,
+}
 
 pub trait Driver: Sized {
     type State: State<Self>;
 
     fn step(&mut self, step: &Step) -> Result;
 
-    fn prepare(&mut self, state: Record) -> Result<Step> {
-        Step::from_mbt_state(state)
+    fn annotations() -> SpecAnnotations {
+        SpecAnnotations::default()
     }
 }

@@ -44,9 +44,10 @@ pub fn run_test<C: GenConfig>(driver: impl Driver, config: Config<C>) -> Result<
     result
 }
 
-fn replay_traces(mut driver: impl Driver, traces: Traces) -> Result<()> {
+fn replay_traces<D: Driver>(mut driver: D, traces: Traces) -> Result<()> {
     info!("Replaying generated traces ...");
 
+    let ann = D::annotations();
     let mut iter = traces.peekable();
     ensure!(
         iter.peek().is_some(),
@@ -61,7 +62,7 @@ fn replay_traces(mut driver: impl Driver, traces: Traces) -> Result<()> {
             let Value::Record(state) = state.value else {
                 bail!("Expected current state to be a Record")
             };
-            let step = driver.prepare(state)?;
+            let step = Step::new(state, &ann)?;
             trace!("[Step {}]\n{}\n", s, step);
             ensure!(
                 !step.action_taken.is_empty(),
@@ -77,7 +78,7 @@ fn replay_traces(mut driver: impl Driver, traces: Traces) -> Result<()> {
 }
 
 fn check_state<D: Driver>(driver: &D, step: Step) -> Result<()> {
-    let spec_state = D::State::from_spec(Value::Record(step.state))?;
+    let spec_state = D::State::from_spec(step.state)?;
     let driver_state = D::State::from_driver(driver)?;
 
     if spec_state != driver_state {
