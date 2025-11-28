@@ -28,7 +28,7 @@ impl NondetPicks {
         Self(Record::new())
     }
 
-    pub fn is_empty(&self) -> bool {
+    pub(crate) fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
 
