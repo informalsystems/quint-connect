@@ -21,7 +21,7 @@ pub trait Config {
 pub(crate) fn generate_traces<C: Config>(config: &C) -> Result<Traces> {
     let tmpdir = TempDir::new("quint-connect")?;
     let mut cmd = config.to_command(tmpdir.path());
-    let output = cmd.output().context("Failed to execute Quint")?;
+    let output = cmd.output().context("Failed to execute Quint command")?;
 
     if !output.status.success() {
         let stderr = String::from_utf8(output.stderr).context("Failed to decode stderr.")?;

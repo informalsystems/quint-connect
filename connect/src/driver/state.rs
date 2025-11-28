@@ -6,6 +6,7 @@ use std::fmt::Debug;
 pub trait State<D>: PartialEq + DeserializeOwned + Debug {
     fn from_driver(driver: &D) -> Result<Self>;
 
+    #[doc(hidden)] // internal use only
     fn from_spec(value: Value) -> Result<Self> {
         Self::deserialize(value).context(
             "Failed to deserialize specification's state.\n\

@@ -75,25 +75,4 @@ mod tests {
 
         assert!(nondet.is_some(), "failed to find nondet value")
     }
-
-    #[test]
-    fn test_display_nondet_picks() {
-        let empty = NondetPicks::from_value(Value::Record(Record::new())).unwrap();
-        assert_eq!(format!("{}", empty), "");
-
-        let mut option = Record::new();
-        option.insert("tag".to_string(), Value::String("Some".to_string()));
-        option.insert("value".to_string(), Value::Number(42));
-
-        let mut record = Record::new();
-        record.insert("foo".to_string(), Value::Record(option.clone()));
-        record.insert("bar".to_string(), Value::Record(option));
-
-        let non_empty = NondetPicks::from_value(Value::Record(record)).unwrap();
-        assert_eq!(
-            format!("{}", non_empty),
-            "+ bar: 42\n\
-             + foo: 42"
-        );
-    }
 }

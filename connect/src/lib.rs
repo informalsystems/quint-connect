@@ -3,6 +3,7 @@ mod logger;
 mod trace;
 mod value;
 
+// Public for macro use
 #[doc(hidden)]
 pub mod runner;
 

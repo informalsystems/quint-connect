@@ -1,7 +1,7 @@
 mod seed;
 
 pub use crate::trace::generator::{RunConfig, TestConfig};
-pub use seed::*;
+pub use seed::gen_random_seed;
 
 use crate::{
     Driver, State, Step,
@@ -45,7 +45,7 @@ pub fn run_test<C: GenConfig>(driver: impl Driver, config: Config<C>) -> Result<
 }
 
 fn replay_traces<D: Driver>(mut driver: D, traces: Traces) -> Result<()> {
-    info!("Replaying generated traces ...");
+    info!("Replaying traces ...");
 
     let ann = D::annotations();
     let mut iter = traces.peekable();
@@ -62,13 +62,16 @@ fn replay_traces<D: Driver>(mut driver: D, traces: Traces) -> Result<()> {
             let Value::Record(state) = state.value else {
                 bail!("Expected current state to be a Record")
             };
+
             let step = Step::new(state, &ann)?;
             trace!("[Step {}]\n{}\n", s, step);
             ensure!(
                 !step.action_taken.is_empty(),
                 "An anonymous action was found!\n\
-                 Please make sure all actions in the specification are propoerly named."
+                 Please make sure all actions in the specification are properly named.\n\
+                 Check the crate docs for tips and tricks on action name heuristics."
             );
+
             driver.step(&step)?;
             check_state(&driver, step)?;
         }
