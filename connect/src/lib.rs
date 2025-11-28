@@ -7,5 +7,5 @@ mod value;
 #[doc(hidden)]
 pub mod runner;
 
-pub use driver::{Driver, Path, Result, SpecAnnotations, State, Step};
+pub use driver::{Driver, Path, Result, Config, State, Step};
 pub use quint_connect_macros::{quint_run, quint_test, switch};

@@ -3,7 +3,6 @@ use anyhow::{Result, bail};
 use itf::value::{Record, Value};
 use std::fmt;
 
-#[doc(hidden)] // public for macro use
 pub struct NondetPicks(Record);
 
 impl NondetPicks {

@@ -1,7 +1,6 @@
+mod nondet;
 mod state;
 mod step;
-
-pub mod nondet;
 
 pub use state::State;
 pub use step::Step;
@@ -10,9 +9,9 @@ pub type Result<A = ()> = anyhow::Result<A>;
 pub type Path = &'static [&'static str];
 
 #[derive(Default)]
-pub struct SpecAnnotations {
-    pub state_location: Path,
-    pub nondet_location: Path,
+pub struct Config {
+    pub state_path: Path,
+    pub nondet_path: Path,
 }
 
 pub trait Driver: Sized {
@@ -20,7 +19,7 @@ pub trait Driver: Sized {
 
     fn step(&mut self, step: &Step) -> Result;
 
-    fn annotations() -> SpecAnnotations {
-        SpecAnnotations::default()
+    fn config() -> Config {
+        Config::default()
     }
 }

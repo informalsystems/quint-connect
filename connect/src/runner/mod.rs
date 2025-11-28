@@ -48,7 +48,7 @@ pub fn run_test<C: GenConfig>(driver: impl Driver, config: Config<C>) -> Result<
 fn replay_traces<D: Driver>(mut driver: D, traces: Traces) -> Result<()> {
     info!("Replaying traces ...");
 
-    let ann = D::annotations();
+    let ann = D::config();
     let mut iter = traces.peekable();
     ensure!(
         iter.peek().is_some(),

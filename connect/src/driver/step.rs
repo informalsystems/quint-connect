@@ -1,5 +1,5 @@
 use crate::{
-    driver::{Path, SpecAnnotations, nondet::NondetPicks},
+    driver::{Config, Path, nondet::NondetPicks},
     value::ValueDisplay,
 };
 use anyhow::{Context, Result, anyhow, bail};
@@ -16,25 +16,25 @@ pub struct Step {
 }
 
 impl Step {
-    pub(crate) fn new(state: Record, ann: &SpecAnnotations) -> Result<Self> {
-        if ann.nondet_location.is_empty() {
-            extract_from_mbt_vars(state, ann.state_location)
+    pub(crate) fn new(state: Record, config: &Config) -> Result<Self> {
+        if config.nondet_path.is_empty() {
+            extract_from_mbt_vars(state, config.state_path)
         } else {
-            extract_from_sum_type(state, ann.nondet_location, ann.state_location)
+            extract_from_sum_type(state, config.nondet_path, config.state_path)
         }
     }
 }
 
-fn extract_from_mbt_vars(mut state: Record, state_loc: Path) -> Result<Step> {
+fn extract_from_mbt_vars(mut state: Record, state_path: Path) -> Result<Step> {
     Ok(Step {
         action_taken: extract_action_from_mbt_var(&mut state)?,
         nondet_picks: extract_nondet_from_mbt_var(&mut state)?,
-        state: extract_vale_in_path(state, state_loc)?,
+        state: extract_vale_in_path(state, state_path)?,
     })
 }
 
-fn extract_from_sum_type(mut state: Record, sum_type_loc: Path, state_loc: Path) -> Result<Step> {
-    let sum_type = find_record_in_path(&state, sum_type_loc)?;
+fn extract_from_sum_type(mut state: Record, sum_type_path: Path, state_path: Path) -> Result<Step> {
+    let sum_type = find_record_in_path(&state, sum_type_path)?;
     let action_taken = extract_action_from_sum_type(sum_type)?;
     let nondet_picks = extract_nondet_from_sum_type(sum_type)?;
 
@@ -42,7 +42,7 @@ fn extract_from_sum_type(mut state: Record, sum_type_loc: Path, state_loc: Path)
     let _ = state.remove("mbt::actionTaken");
     let _ = state.remove("mbt::nondetPicks");
 
-    let state = extract_vale_in_path(state, state_loc)?;
+    let state = extract_vale_in_path(state, state_path)?;
 
     Ok(Step {
         action_taken,

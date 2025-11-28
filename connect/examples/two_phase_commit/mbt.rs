@@ -37,10 +37,10 @@ struct TwoPhaseCommitDriver {
 impl Driver for TwoPhaseCommitDriver {
     type State = SpecState;
 
-    fn annotations() -> SpecAnnotations {
-        SpecAnnotations {
-            state_location: &["two_phase_commit::choreo::s", "system"],
-            nondet_location: &["two_phase_commit::choreo::s", "extensions", "actionTaken"],
+    fn config() -> Config {
+        Config {
+            state_path: &["two_phase_commit::choreo::s", "system"],
+            nondet_path: &["two_phase_commit::choreo::s", "extensions", "actionTaken"],
         }
     }
 
