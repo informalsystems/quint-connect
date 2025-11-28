@@ -176,8 +176,7 @@ fn test_simulation() -> impl Driver {
 
 #[quint_test(
     spec = "examples/two_phase_commit/spec/two_phase_commit.qnt",
-    test = "commitTest",
-    max_samples = 1
+    test = "commitTest"
 )]
 fn test_commit() -> impl Driver {
     TwoPhaseCommitDriver::default()

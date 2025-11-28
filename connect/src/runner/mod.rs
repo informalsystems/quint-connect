@@ -10,6 +10,7 @@ use crate::{
         generator::{Config as GenConfig, generate_traces},
         iter::Traces,
     },
+    value::ValueDisplay,
 };
 use anyhow::{Result, bail, ensure};
 use itf::Value;
@@ -56,15 +57,20 @@ fn replay_traces<D: Driver>(mut driver: D, traces: Traces) -> Result<()> {
     );
 
     for (trace, t) in iter.zip(1..) {
-        trace!("[Trace {}]", t);
+        trace!(1, "[Trace {}]", t);
 
         for (state, s) in trace?.states.into_iter().zip(0..) {
+            trace!(
+                2,
+                "Deriving step from trace value:\n{}\n",
+                state.value.display()
+            );
             let Value::Record(state) = state.value else {
                 bail!("Expected current state to be a Record")
             };
 
             let step = Step::new(state, &ann)?;
-            trace!("[Step {}]\n{}\n", s, step);
+            trace!(1, "[Step {}]\n{}\n", s, step);
             ensure!(
                 !step.action_taken.is_empty(),
                 "An anonymous action was found!\n\
@@ -91,6 +97,7 @@ fn check_state<D: Driver>(driver: &D, step: Step) -> Result<()> {
 
         error!("Specification and implementation states diverge");
         trace!(
+            1,
             "{}",
             diff.unified_diff()
                 .context_radius(256) // large enought?

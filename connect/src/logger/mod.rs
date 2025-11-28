@@ -4,7 +4,18 @@ mod util;
 pub(crate) use colored::Colorize;
 pub(crate) use util::*;
 
-pub(crate) const VERBOSE: bool = option_env!("QUINT_VERBOSE").is_some();
+use std::sync::OnceLock;
+
+static VERBOSITY: OnceLock<u8> = OnceLock::new();
+
+pub(crate) fn verbosity() -> u8 {
+    *VERBOSITY.get_or_init(|| match option_env!("QUINT_VERBOSE") {
+        Some("0") | None => 0,
+        Some("1") => 1,
+        Some("2") => 2,
+        Some(n) => panic!("Invalid verbosity level: {}", n),
+    })
+}
 
 macro_rules! title {
     ($fmt:literal $(, $args:expr)*) => {
@@ -32,8 +43,8 @@ macro_rules! error {
 }
 
 macro_rules! trace {
-    ($fmt:literal $(, $args:expr)*) => {
-        if crate::logger::VERBOSE {
+    ($level:literal, $fmt:literal $(, $args:expr)*) => {
+        if crate::logger::verbosity() >= $level {
             eprintln!("{}", crate::logger::indent!(3, $fmt $(,$args)*).dimmed().bright_white());
         }
     };
