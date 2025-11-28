@@ -1,0 +1,11 @@
+error: invalid digit found in string
+  --> tests/macros/quint_test/fail/invalid_num.rs:13:47
+   |
+13 | #[quint_test(spec = "spec.qnt", max_samples = -666)]
+   |                                               ^
+
+error: expected integer literal
+  --> tests/macros/quint_test/fail/invalid_num.rs:18:47
+   |
+18 | #[quint_test(spec = "spec.qnt", max_samples = "666")]
+   |                                               ^^^^^

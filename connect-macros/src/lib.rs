@@ -11,3 +11,8 @@ pub fn switch(input: TokenStream) -> TokenStream {
 pub fn quint_run(args: TokenStream, item: TokenStream) -> TokenStream {
     internal::run::expand(args, item)
 }
+
+#[proc_macro_attribute]
+pub fn quint_test(args: TokenStream, item: TokenStream) -> TokenStream {
+    internal::test::expand(args, item)
+}

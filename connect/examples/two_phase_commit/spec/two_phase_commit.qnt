@@ -196,18 +196,20 @@ module two_phase_commit {
 
   action step = choreo::step(
     main_listener,
-    (ctx, effect) => {
-      match effect {
-        RecordAction(actionTaken) => {
-          ...ctx,
-          extensions: {
-            ...ctx.extensions,
-            actionTaken: actionTaken
-          }
+    apply_custom_effects
+  )
+
+  def apply_custom_effects(ctx: GlobalContext, effect: CustomEffects): GlobalContext = {
+    match effect {
+      RecordAction(actionTaken) => {
+        ...ctx,
+        extensions: {
+          ...ctx.extensions,
+          actionTaken: actionTaken
         }
       }
     }
-  )
+  }
 
   // Invariants and witnesses
 
@@ -221,7 +223,7 @@ module two_phase_commit {
   val wit_commit = PARTICIPANTS.exists(p => choreo::s.system.get(p).stage != Committed)
 
   action step_with(v: Node, listener: LocalContext => Set[Transition]): bool =
-    choreo::step_with(v, listener, (c, _) => c)
+    choreo::step_with(v, listener, apply_custom_effects)
 
   run commitTest = init
     .then(step_with("p1", spontaneously_prepares))

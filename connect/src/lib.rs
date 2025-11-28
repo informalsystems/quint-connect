@@ -8,4 +8,4 @@ mod value;
 pub mod runner;
 
 pub use driver::{Driver, Path, Result, SpecAnnotations, State, Step};
-pub use quint_connect_macros::{quint_run, switch};
+pub use quint_connect_macros::{quint_run, quint_test, switch};
