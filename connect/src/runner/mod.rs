@@ -59,10 +59,10 @@ fn replay_traces<D: Driver>(mut driver: D, traces: Traces) -> Result<()> {
          Please check your specification and/or your test configuration."
     );
 
-    for (trace, t) in iter.zip(1..) {
+    for (trace, t) in iter.zip(1usize..) {
         trace!(1, "[Trace {}]", t);
 
-        for (state, s) in trace?.states.into_iter().zip(0..) {
+        for (s, state) in trace?.states.into_iter().enumerate() {
             trace!(2, "Deriving step from:\n{}\n", state.value.display());
             let Value::Record(state) = state.value else {
                 bail!("Expected current state to be a Record")
