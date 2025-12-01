@@ -34,7 +34,7 @@ fn extract_from_mbt_vars(mut state: Record, state_path: Path) -> Result<Step> {
     Ok(Step {
         action_taken: extract_action_from_mbt_var(&mut state)?,
         nondet_picks: extract_nondet_from_mbt_var(&mut state)?,
-        state: extract_vale_in_path(state, state_path)?,
+        state: extract_value_in_path(state, state_path)?,
     })
 }
 
@@ -47,7 +47,7 @@ fn extract_from_sum_type(mut state: Record, sum_type_path: Path, state_path: Pat
     let _ = state.remove("mbt::actionTaken");
     let _ = state.remove("mbt::nondetPicks");
 
-    let state = extract_vale_in_path(state, state_path)?;
+    let state = extract_value_in_path(state, state_path)?;
 
     Ok(Step {
         action_taken,
@@ -74,7 +74,7 @@ fn extract_nondet_from_mbt_var(state: &mut Record) -> Result<NondetPicks> {
         })
 }
 
-fn extract_vale_in_path(state: Record, path: &[&str]) -> Result<Value> {
+fn extract_value_in_path(state: Record, path: &[&str]) -> Result<Value> {
     let mut value = Value::Record(state);
     for segment in path {
         let Value::Record(mut rec) = value else {
@@ -188,51 +188,51 @@ mod tests {
     use itf::Value;
 
     #[test]
-    fn test_extract_vale_in_path_empty_path() {
+    fn test_extract_value_in_path_empty_path() {
         let mut rec = Record::new();
         rec.insert("key".to_string(), Value::String("value".to_string()));
 
-        let result = extract_vale_in_path(rec.clone(), &[]).unwrap();
+        let result = extract_value_in_path(rec.clone(), &[]).unwrap();
         assert_eq!(result, Value::Record(rec));
     }
 
     #[test]
-    fn test_extract_vale_in_path_single_level() {
+    fn test_extract_value_in_path_single_level() {
         let mut rec = Record::new();
         rec.insert("key".to_string(), Value::String("value".to_string()));
 
-        let result = extract_vale_in_path(rec, &["key"]).unwrap();
+        let result = extract_value_in_path(rec, &["key"]).unwrap();
         assert_eq!(result, Value::String("value".to_string()));
     }
 
     #[test]
-    fn test_extract_vale_in_path_nested() {
+    fn test_extract_value_in_path_nested() {
         let mut inner = Record::new();
         inner.insert("inner_key".to_string(), Value::Number(42));
 
         let mut outer = Record::new();
         outer.insert("outer_key".to_string(), Value::Record(inner));
 
-        let result = extract_vale_in_path(outer, &["outer_key", "inner_key"]).unwrap();
+        let result = extract_value_in_path(outer, &["outer_key", "inner_key"]).unwrap();
         assert_eq!(result, Value::Number(42));
     }
 
     #[test]
     #[should_panic(expected = "Can not find a value at")]
-    fn test_extract_vale_in_path_missing_key() {
+    fn test_extract_value_in_path_missing_key() {
         let mut rec = Record::new();
         rec.insert("key".to_string(), Value::String("value".to_string()));
 
-        extract_vale_in_path(rec, &["missing"]).unwrap();
+        extract_value_in_path(rec, &["missing"]).unwrap();
     }
 
     #[test]
     #[should_panic(expected = "non-record value in path")]
-    fn test_extract_vale_in_path_non_record() {
+    fn test_extract_value_in_path_non_record() {
         let mut rec = Record::new();
         rec.insert("key".to_string(), Value::String("value".to_string()));
 
-        extract_vale_in_path(rec, &["key", "nested"]).unwrap();
+        extract_value_in_path(rec, &["key", "nested"]).unwrap();
     }
 
     #[test]
