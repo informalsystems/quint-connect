@@ -5,11 +5,13 @@ use std::{
     io::BufReader,
     path::Path,
 };
-use tempdir::TempDir;
+use tempfile::TempDir;
 
 /// Iterator over ITF trace files, managing temporary directory lifetime.
 pub(crate) struct Traces {
     iter: ReadDir,
+    // NOTE: must be dropped after `ReadDir` to avoid leaking. See
+    // https://docs.rs/tempfile/latest/tempfile/struct.TempDir.html#resource-leaking.
     _tmpdir: TempDir,
 }
 
