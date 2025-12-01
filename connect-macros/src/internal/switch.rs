@@ -147,7 +147,6 @@ impl Case {
                 }
             }
             None => {
-                assert!(handler.is_some(), "_ case requires a handler block");
                 quote! {
                     _ => {
                         #handler;
