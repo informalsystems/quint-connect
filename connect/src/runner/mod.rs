@@ -100,7 +100,7 @@ fn check_state<D: Driver>(driver: &D, step: Step) -> Result<()> {
             1,
             "{}",
             diff.unified_diff()
-                .context_radius(256) // large enought?
+                .context_radius(256) // XXX: large enough?
                 .header("specification", "implementation")
                 .missing_newline_hint(false)
         );
