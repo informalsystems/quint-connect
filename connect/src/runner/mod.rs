@@ -63,7 +63,7 @@ fn replay_traces<D: Driver>(mut driver: D, traces: Traces) -> Result<()> {
         trace!(1, "[Trace {}]", t);
 
         for (state, s) in trace?.states.into_iter().zip(0..) {
-            trace!(2, "\nDeriving step from:\n{}\n", state.value.display());
+            trace!(2, "Deriving step from:\n{}\n", state.value.display());
             let Value::Record(state) = state.value else {
                 bail!("Expected current state to be a Record")
             };
