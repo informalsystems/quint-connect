@@ -74,7 +74,7 @@ fn replay_traces<D: Driver>(mut driver: D, traces: Traces) -> Result<()> {
                 !step.action_taken.is_empty(),
                 "An anonymous action was found!\n\
                  Please make sure all actions in the specification are properly named.\n\
-                 Check the crate docs for tips and tricks on action name heuristics."
+                 Check the crate docs for tips and tricks on nondeterminism."
             );
 
             driver.step(&step)?;

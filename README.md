@@ -119,6 +119,52 @@ QUINT_VERBOSE=1 cargo test -- --nocapture
 
 ## Tips and Tricks
 
+### Nondeterminism
+
+Quint detects nondeterminism in the specification's `step` action. For example:
+
+```quint
+action step = any {
+  action1,
+  // ...
+}
+
+action action1 = {
+  nondet node = NODES.oneOf()
+  // ...
+}
+```
+
+When collecting traces, Quint keeps track of action names and their set of
+`nondet` values as it runs simulations or tests. These become available to Quint
+Connect automatically. However, if an anonymous action is detected, Quint
+Connect will fail to run steps:
+
+```quint
+action step = any {
+  action1,
+  all {  // <- anonymous action!
+    action2,
+    action3
+  }
+}
+```
+
+In those cases, simply rewrite the spec so that all actions in `step` are
+properly named:
+
+```quint
+action step = any {
+  action1,
+  action2_and_3
+}
+
+action action2_and_3 = all {
+  action2,
+  action3
+}
+```
+
 ### Enums
 
 Quint sum types are serialized by Quint as records with the `tag` and `value`
