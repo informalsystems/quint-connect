@@ -17,10 +17,10 @@ pub struct Step {
 
 impl Step {
     pub(crate) fn new(state: Record, config: &Config) -> Result<Self> {
-        if config.nondet_path.is_empty() {
-            extract_from_mbt_vars(state, config.state_path)
+        if config.nondet.is_empty() {
+            extract_from_mbt_vars(state, config.state)
         } else {
-            extract_from_sum_type(state, config.nondet_path, config.state_path)
+            extract_from_sum_type(state, config.nondet, config.state)
         }
     }
 }

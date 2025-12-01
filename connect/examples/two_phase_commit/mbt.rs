@@ -39,8 +39,8 @@ impl Driver for TwoPhaseCommitDriver {
 
     fn config() -> Config {
         Config {
-            state_path: &["two_phase_commit::choreo::s", "system"],
-            nondet_path: &["two_phase_commit::choreo::s", "extensions", "actionTaken"],
+            state: &["two_phase_commit::choreo::s", "system"],
+            nondet: &["two_phase_commit::choreo::s", "extensions", "actionTaken"],
         }
     }
 

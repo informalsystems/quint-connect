@@ -10,8 +10,8 @@ pub type Path = &'static [&'static str];
 
 #[derive(Default)]
 pub struct Config {
-    pub state_path: Path,
-    pub nondet_path: Path,
+    pub state: Path,
+    pub nondet: Path,
 }
 
 pub trait Driver: Sized {
