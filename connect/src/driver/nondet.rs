@@ -3,6 +3,8 @@ use anyhow::{Result, bail};
 use itf::value::{Record, Value};
 use std::fmt;
 
+/// Wraps nondeterministic choices made during trace generation.
+#[doc(hidden)] // public for macro use
 pub struct NondetPicks(Record);
 
 impl From<Record> for NondetPicks {
@@ -33,6 +35,7 @@ impl NondetPicks {
         self.0.is_empty()
     }
 
+    #[doc(hidden)] // public for macro use
     pub fn get<'a>(&'a self, var: &str) -> Option<&'a Value> {
         self.0.get(var)
     }

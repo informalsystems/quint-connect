@@ -7,6 +7,11 @@ use itf::value::{Record, Value};
 use serde::Deserialize;
 use std::fmt;
 
+/// Represents a single step in a trace generated from a Quint specification.
+///
+/// Steps are passed to [`Driver::step`](crate::Driver::step) for execution against
+/// the implementation. Use the [`switch!`](crate::switch) macro to pattern-match
+/// on action names and extract nondeterministic picks from steps.
 pub struct Step {
     #[doc(hidden)] // public for macro use
     pub action_taken: String,

@@ -103,6 +103,20 @@ fn simulation() -> impl Driver {
 }
 ```
 
+### 4. Run Test
+
+Run tests with:
+
+```bash
+cargo test -- --nocapture
+```
+
+Increase verbosity to see step's actions and nondeterministic choices available:
+
+```bash
+QUINT_VERBOSE=1 cargo test -- --nocapture
+```
+
 ## Tips and Tricks
 
 ### Enums
@@ -182,35 +196,33 @@ struct MyState {
 ### Driver Configuration
 
 In some cases the state that you want to check is nested within some global
-variable. To narrow down the verifiable state, override the test driver
-configuration with the path to the variable that holds the state to check:
+variable. To narrow down the verifiable state, override the Driver `config`
+method with the path to the variable that holds the state to check:
 
-```rust,ignore
-impl Driver for MyDriver {
-    fn config() -> Config {
-        Config {
-            state: &["global_var", "nested_record", "my_state"],
-            ..Config::default()
-        }
+```rust
+use quint_connect::*;
+
+fn config() -> Config {
+    Config {
+        state: &["global_var", "nested_record", "my_state"],
+        ..Config::default()
     }
-    // ...
 }
 ```
 
-Similarly, in some scenarios the user may choose to track non-determinism
+Similarly, in some scenarios the user may choose to track nondeterminism
 manually other than using Quint's builtin variables. In those cases, track
-non-determinism as a sum type where each variant holds a record containing
-non-deterministic choices, then specify its path in the driver's configuration:
+nondeterminism as a sum type where each variant holds a record containing
+nondeterministic choices, then specify its path in the driver's configuration:
 
-```rust,ignore
-impl Driver for MyDriver {
-    fn config() -> Config {
-        Config {
-            nondet: &["global_var", "nondet_choices"],
-            ..Config::default()
-        }
+```rust
+use quint_connect::*;
+
+fn config() -> Config {
+    Config {
+        nondet: &["global_var", "nondet_choices"],
+        ..Config::default()
     }
-    // ...
 }
 ```
 

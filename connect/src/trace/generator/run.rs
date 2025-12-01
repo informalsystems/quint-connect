@@ -1,6 +1,7 @@
 use crate::trace::generator::{Config, DEFAULT_TRACES, utils::opt_arg};
 use std::{path::Path, process::Command};
 
+/// Configuration for generating traces using `quint run` in simulation mode.
 pub struct RunConfig {
     pub spec: String,
     pub main: Option<String>,

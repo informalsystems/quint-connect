@@ -16,11 +16,14 @@ use anyhow::{Result, bail, ensure};
 use itf::Value;
 use similar::TextDiff;
 
+/// Configuration for running model-based tests, combining test metadata with
+/// trace generation settings.
 pub struct Config<C: GenConfig> {
     pub test_name: String,
     pub gen_config: C,
 }
 
+/// Run the test configuration using the given test driver.
 pub fn run_test<C: GenConfig>(driver: impl Driver, config: Config<C>) -> Result<()> {
     title!("Running model based tests for {}", config.test_name);
     info!(

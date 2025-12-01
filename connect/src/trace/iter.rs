@@ -7,6 +7,7 @@ use std::{
 };
 use tempdir::TempDir;
 
+/// Iterator over ITF trace files, managing temporary directory lifetime.
 pub(crate) struct Traces {
     iter: ReadDir,
     _tmpdir: TempDir,

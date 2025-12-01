@@ -1,5 +1,6 @@
 use itf::Value;
 
+/// Internal trait for converting Quint types to Rust Option types.
 pub(crate) trait ValueOption {
     fn into_option(self) -> Option<Value>;
 }

@@ -1,6 +1,7 @@
 use itf::value::{Map, Record, Value};
 use std::fmt::{Display, Formatter, Result};
 
+/// Internal trait for displaying ITF values in Quint-like syntax.
 pub(crate) trait ValueDisplay {
     fn display(&self) -> impl Display;
 }

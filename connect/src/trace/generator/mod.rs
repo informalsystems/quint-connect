@@ -10,8 +10,10 @@ use anyhow::{Context, Result, anyhow};
 use std::{path::Path, process::Command};
 use tempdir::TempDir;
 
+/// Default number of traces to generate when not specified.
 const DEFAULT_TRACES: usize = 100;
 
+/// Internal trait for configuring trace generation.
 pub trait Config {
     fn seed(&self) -> &str;
     fn n_traces(&self) -> usize;
