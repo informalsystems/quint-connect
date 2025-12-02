@@ -18,7 +18,7 @@ struct GameState {
 }
 
 impl State<TicTacToeDriver> for GameState {
-    fn from_driver(driver: &TicTacToeDriver) -> anyhow::Result<Self> {
+    fn from_driver(driver: &TicTacToeDriver) -> Result<Self> {
         let mut board: BTreeMap<usize, BTreeMap<usize, Square>> = BTreeMap::new();
         for (col, x) in driver.game.board.iter().zip(1..) {
             for (cell, y) in col.iter().zip(1..) {
