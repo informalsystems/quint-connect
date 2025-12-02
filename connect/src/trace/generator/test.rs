@@ -32,7 +32,6 @@ impl Config for TestConfig {
             .arg(n_traces)
             .arg("--out-itf")
             .arg(tmpdir.join("test_{seq}.itf.json"))
-            .arg("--mbt")
             .arg("--verbosity")
             .arg("0");
 
@@ -66,7 +65,6 @@ mod tests {
              --match ^happyTest$ \
              --max-samples 100 \
              --out-itf tmpdir/test_{seq}.itf.json \
-             --mbt \
              --verbosity 0"
         );
     }
@@ -83,7 +81,6 @@ mod tests {
              --match ^happyTest$ \
              --max-samples 100 \
              --out-itf tmpdir/test_{seq}.itf.json \
-             --mbt \
              --verbosity 0 \
              --main tests"
         );
@@ -101,7 +98,6 @@ mod tests {
              --match ^happyTest$ \
              --max-samples 42 \
              --out-itf tmpdir/test_{seq}.itf.json \
-             --mbt \
              --verbosity 0"
         );
     }
