@@ -1,6 +1,6 @@
 [package]
 name   = "quint-connect"
-readme = "../README.md"
+readme = "README.md"
 description = "A model-based testing framework that connects Quint specifications with Rust applications"
 
 version       = { workspace = true }
