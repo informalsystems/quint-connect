@@ -27,3 +27,6 @@ similar    = "2.7"
 
 [dev-dependencies]
 trybuild = { version = "1.0.114", features = ["diff"] }
+
+[build-dependencies]
+version_check = "0.9"
