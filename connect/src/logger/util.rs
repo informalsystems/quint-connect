@@ -17,8 +17,6 @@ pub(crate) use indent;
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test]
     fn test_ident() {
         assert_eq!(indent!(0, "foo\nbar"), "foo\nbar");
