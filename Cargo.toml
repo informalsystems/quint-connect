@@ -3,7 +3,7 @@ members  = ["connect" , "connect-macros"]
 resolver = "3"
 
 [workspace.package]
-version       = "0.1.0"
+version       = "0.1.1"
 edition       = "2024"
 license       = "Apache-2.0"
 repository    = "https://github.com/informalsystems/quint-connect"
@@ -14,4 +14,4 @@ keywords      = ["quint", "model-based-testing", "testing", "formal-methods", "v
 authors       = ["Informal Systems Inc. <hello@informal.systems>"]
 
 [workspace.dependencies]
-quint-connect-macros = { version = "0.1.0", path = "connect-macros" }
+quint-connect-macros = { version = "0.1.1", path = "connect-macros" }
