@@ -32,4 +32,10 @@ fn test3() -> impl Driver {
     TestDriver
 }
 
+#[quint_test(spec = "spec.qnt", test = "test1Test")]
+#[should_panic = "some error"]
+fn test4() -> impl Driver {
+    TestDriver
+}
+
 fn main() {}
