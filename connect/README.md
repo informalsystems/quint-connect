@@ -1,5 +1,16 @@
 # Quint Connect
 
+[![Crates.io][crates-badge]][crates-url]
+[![Docs.rs][docs-badge]][docs-url]
+[![Apache-2.0][apache-badge]][apache-url]
+
+[crates-badge]: https://img.shields.io/crates/v/quint-connect.svg
+[crates-url]: https://crates.io/crates/quint-connect
+[docs-badge]: https://img.shields.io/docsrs/quint-connect
+[docs-url]: https://docs.rs/quint-connect
+[apache-badge]: https://img.shields.io/badge/license-Apache%20License%202.0-blue
+[apache-url]: https://github.com/informalsystems/quint-connect/blob/main/LICENSE
+
 A model-based testing framework for Rust that connects
 [Quint](https://quint-lang.org/) specifications with Rust applications.
 
