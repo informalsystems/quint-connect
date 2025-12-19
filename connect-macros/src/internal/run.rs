@@ -58,12 +58,14 @@ pub(crate) fn expand(args: TokenStream, item: TokenStream) -> TokenStream {
     let seed = quote_seed(&attrs.seed);
 
     let test_fn = parse_macro_input!(item as ItemFn);
+    let test_attrs = test_fn.attrs;
     let test_ident = test_fn.sig.ident;
     let test_name = test_ident.to_string();
     let test_block = test_fn.block;
 
     quote! {
         #[test]
+        #(#test_attrs)*
         fn #test_ident() -> anyhow::Result<()> {
             let driver = #test_block;
             let config = quint_connect::runner::Config {

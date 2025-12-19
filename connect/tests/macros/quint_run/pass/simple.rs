@@ -28,4 +28,10 @@ fn test2() -> impl Driver {
     TestDriver
 }
 
+#[quint_run(spec = "spec.qnt")]
+#[ignore]
+fn test3() -> impl Driver {
+    TestDriver
+}
+
 fn main() {}
