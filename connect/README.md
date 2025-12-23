@@ -1,5 +1,4 @@
 # Quint Connect
-
 [![Crates.io][crates-badge]][crates-url]
 [![Docs.rs][docs-badge]][docs-url]
 [![Apache-2.0][apache-badge]][apache-url]
@@ -14,6 +13,7 @@
 A model-based testing framework for Rust that connects
 [Quint](https://quint-lang.org/) specifications with Rust applications.
 
+![Robot connecting a plug with a Quint artifact on the left and Rust artifact on the right](https://github.com/user-attachments/assets/5d493ae6-fe47-43b3-94fb-ae1817276066)
 ## Overview
 
 Quint Connect enables rigorous testing of Rust code against formal
