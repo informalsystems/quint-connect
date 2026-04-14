@@ -1,16 +1,9 @@
 use std::{ffi::OsStr, process::Command};
 
 pub fn quint_command() -> Command {
-    #[cfg(windows)]
-    {
-        // Wraps the quint invocation in cmd.exe /C on Windows 
-        // (needed because npm installs quint as a .cmd batch file that Rust's Command can't execute directly)
-        let mut cmd = Command::new("cmd");
-        cmd.args(["/C", "quint"]);
-        cmd
-    }
-    #[cfg(not(windows))]
-    {
+    if cfg!(windows) {
+        Command::new("quint.cmd")
+    } else {
         Command::new("quint")
     }
 }

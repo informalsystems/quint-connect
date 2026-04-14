@@ -1,4 +1,7 @@
-use crate::trace::generator::{Config, DEFAULT_TRACES, utils::{opt_arg, quint_command}};
+use crate::trace::generator::{
+    Config, DEFAULT_TRACES,
+    utils::{opt_arg, quint_command},
+};
 use std::{path::Path, process::Command};
 
 /// Configuration for generating traces using `quint run` in simulation mode.
