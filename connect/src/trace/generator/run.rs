@@ -1,4 +1,7 @@
-use crate::trace::generator::{Config, DEFAULT_TRACES, utils::opt_arg};
+use crate::trace::generator::{
+    Config, DEFAULT_TRACES,
+    utils::{opt_arg, quint_command},
+};
 use std::{path::Path, process::Command};
 
 /// Configuration for generating traces using `quint run` in simulation mode.
@@ -23,7 +26,7 @@ impl Config for RunConfig {
 
     fn to_command(&self, tmpdir: &Path) -> Command {
         let n_traces = self.n_traces().to_string();
-        let mut cmd = Command::new("quint");
+        let mut cmd = quint_command();
         cmd.arg("run")
             .arg(Path::new(&self.spec))
             .arg("--seed")
